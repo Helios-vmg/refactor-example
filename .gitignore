@@ -1,0 +1,12 @@
+*.tar
+fftw-3.3.9
+.vs
+*.pdb
+*.tlog
+*.log
+*.o
+*.obj
+*.exe
+*.user
+*.db
+*.idb
