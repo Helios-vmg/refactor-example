@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES // for C++
 #define FFTW_ESTIMATE (1U << 6)
+#include "matrix.h"
 #include<math.h>
 #include<stdio.h>
 # include <cmath>
