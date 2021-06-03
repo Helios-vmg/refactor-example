@@ -1,6 +1,7 @@
 #pragma once
 
 #include "fftw3.h"
+#include "types.h"
 #include <type_traits>
 #include <memory>
 #include <algorithm>
@@ -73,18 +74,34 @@ public:
 	bool operator!() const{
 		return !this->matrix;
 	}
-	T &get(size_t x, size_t y){
+	T &get(size_t row, size_t col){
 #ifdef CHECK_ACCESSES
-		if (x >= this->w || y >= this->h)
+		if (col >= this->w || row >= this->h)
 			throw std::runtime_error("bad access");
 #endif
-		return this->matrix.get()[x + y * this->w];
+		return this->matrix.get()[col * this->h + row];
 	}
-	const T &get(size_t x, size_t y) const{
+	const T &get(size_t row, size_t col) const{
 #ifdef CHECK_ACCESSES
-		if (x >= this->w || y >= this->h)
+		if (col >= this->w || row >= this->h)
 			throw std::runtime_error("bad access");
 #endif
-		return this->matrix.get()[x + y * this->w];
+		return this->matrix.get()[col * this->h + row];
+	}
+	size_t cols() const{
+		return this->w;
+	}
+	size_t rows() const{
+		return this->h;
+	}
+	template <typename F>
+	void for_each(const F &f){
+		for (size_t i = 0; i < w; i++)
+			for (size_t j = 0; j < h; j++)
+				f(j, i, this->get(j, i));
 	}
 };
+
+Matrix<complex> to_fourier(const Matrix<double> &);
+Matrix<complex> derivk(const Matrix<complex> &, const Matrix<double> &);
+Matrix<complex2d> derivk(const Matrix<complex> &, const Matrix<point2d> &);

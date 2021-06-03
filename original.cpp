@@ -1,7 +1,5 @@
 #define _USE_MATH_DEFINES // for C++
 #define FFTW_ESTIMATE (1U << 6)
-#include "matrix.h"
-#include "types.h"
 #include<math.h>
 #include<stdio.h>
 # include <cmath>
@@ -63,75 +61,9 @@ void calc_sourcen(double ksqu[], double nk[][ncomp], double d, double sourcenk[]
 void RK4(double f[][ncomp], double dt, double residual[][ncomp], double source[][ncomp], int stage, double fout[][ncomp]);
 void print2DB(char filename[], double arr[]);
 
-const double pi = M_PI;
-const double tau = 2 * pi;
-
-// Make x coordinates. We want them to change as we change the zeroth index and be constant as we change the first index.
-Matrix<point2d> makeSpatialMesh2D(size_t cols, size_t rows, double dx, double dy){
-	Matrix<point2d> ret(cols, rows);
-
-	for(size_t col = 0; col < cols; col++){
-		for(size_t row = 0; row < rows; row++){
-			auto &point = ret.get(row, col);
-			point.x = col * dx;
-			point.y = row * dy;
-		}		
-	}
-
-	return ret;
-}
 
 
-std::tuple<Matrix<point2d>, Matrix<double>, Matrix<double>> makeFourierMesh2D(double Lx, double Ly, size_t w, size_t h, int FourierMeshType){
-	Matrix<point2d> points(w, h);
-
-	for (size_t i = 0; i < w / 2; i++)
-		for (size_t j = 0; j < h; j++)
-			points.get(j, i).x = tau * i / Lx;
-	for (size_t i = w / 2; i < w; i++){
-		int k_counter = i - w / 2;
-		for (size_t j = 0; j < h; j++){
-			// You can then simplify `(-i + 2.*k_counter)` to `(-i + 2 * (  i - nx/2))` and then `(-i + 2*i - nx)`, which is `i - nx`.
-			points.get(j, i).x = tau * (-i + 2 * k_counter) / Lx;
-		}
-	}
-		
-	// Make ky. Because we are using special FFTs for purely real valued functions, the last dimension (y in this case) only need n/2 + 1 points due to symmetry about the imaginary axis.
-	points.for_each([Ly](size_t j, size_t i, auto &p){
-		p.y = tau * j / Ly;
-	});
-
-	double dx = Lx / nx;
-	double dy = Ly / ny;
-	double dx2 = dx / 2;
-	double dy2 = dy / 2;
-	Matrix<double> ksqu(w, h);
-	auto ninvksqu = ksqu;
-	if (FourierMeshType == 0){
-		points.for_each([&](size_t j, size_t i, const auto &p){
-			auto sqnorm = p.sqnorm();
-			ksqu.get(j, i) = sqnorm;
-			ninvksqu.get(j, i) = -1.0 / sqnorm;
-		});
-	}else if (FourierMeshType == 1){
-		points.for_each([&](size_t j, size_t i, auto &p){
-			//Use approximations for Kx, Ky, K^2
-			auto x = sin(p.x * dx2) / dx2;
-			auto y = sin(p.y * dx2) / dx2;
-			p = { x, y };
-			auto sqnorm = p.sqnorm();
-			ksqu.get(j, i) = sqnorm;
-			ninvksqu.get(j, i) = -1.0 / sqnorm;
-		});
-	}
-
-	// Account for the [0][0] point since there is a divide by 0 issue.
-	ninvksqu.get(0, 0) = -1;
-	
-	return {points, ksqu, ninvksqu};
-}
-
-int main(){
+int main (void){
 
 	double saveFrequency = 1.0;    // Save data every this many time steps
 	double dt_max = 0.1;        // Set max allowable time step
@@ -182,89 +114,303 @@ int main(){
 	double ri = 152.E-12;          // Effective collision radius
 	double rn = ri;
 	// Set magnetic field. Also calculate different properties of it
-	point3d B = {0,0,5E-5}; 
-	auto Bmag = B.norm();
+	double B[3] = {0,0,5E-5}; 
+	double Bmag = mag1DArray(B);
 	double B2 = Bmag * Bmag;
 
 	// Set neutral wind. Generally, the last element will be 0.
-	point3d u = {-500, 0, 0};
+	double u[3] = {-500, 0, 0};
 
-	auto mesh2d = makeSpatialMesh2D(nx, nyk, dx, dy);
-	double kmax = 1.0 / (2.0 * std::min(dx, dy));
+    //test
+    double *ne;
+    ne = (double*) fftw_malloc(nx*ny*sizeof(double));
 
-	Matrix<double> ne(nx, ny);
-	auto Ti = ne;
-	auto Te = ne;
-	auto Pi = ne;
-	auto Pe = ne;
-	auto phi = ne;
-	auto tem = ne;
-	auto tem2 = ne;
-	Matrix<complex> base(nx, nyk);
-	auto residualnk = base;
-	auto residualtik = base;
-	auto residualtek = base;
-	auto sourcenk = base;
-	auto sourcetk = base;
-	auto nek_old = base;
-	auto Tik_old = base;
-	auto Tek_old = base;
-	auto vdmixk = base;
+    fftw_complex *nek;
+    nek = (fftw_complex*) fftw_malloc(nx*nyk*sizeof(fftw_complex));
+    memset(nek, 42, nx*nyk* sizeof(fftw_complex)); 
 
-	Matrix<point2d> vexb(nx, ny);
-	auto vdme = vexb;
-	auto vdmi = vexb;
-	Matrix<complex2d> vexbk(nx, nyk);
-	auto vdmek = vexbk;
-	auto vdmi = vexbk;
-	auto veok = vexbk;
-	auto viok = vexbk;
+    double *XX;
+	XX = (double*) fftw_malloc(nx*ny*sizeof(double));
+	//print2DPhysArray(XX);
 
-	auto [k, ksqu, ninvksqu] = makeFourierMesh2D(Lx, Ly, nx, nyk, 1);
+	double *YY;
+	YY = (double*) fftw_malloc(nx*ny*sizeof(double));
 
-	for (size_t i = 0; i < nx; i++){
-		for (size_t j = 0; j < ny; j++){
-			auto p = mesh2d.get(j, i);
-			auto &nep = ne.get(j, i);
+    double kmax = makeSpatialMesh2D(dx, dy, XX, YY); // returns XX, YY, ..
 
-			auto t = tanh(b * (p.x + c));
-			auto bg1 = -bg * (p.x - xg) * (p.x - xg);
-			auto bg2 = -bg * (p.x - Lx + xg) * (p.x - Lx + xg);
-			auto expsum = exp(bg1) + exp(bg2);
 
-			nep = a * t;
-			nep += d;
-			nep += a2 * t;
-			nep += d2;
-			nep += .02 * cos(2 * tau * p.y / Ly) * expsum;
-			nep *= 1.E11;
+    double *Ti;
+	Ti = (double*) fftw_malloc(nx*ny*sizeof(double));
 
-			Te.get(j, i) = Ti.get(j, i) = 1000;
-			Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
-        }
-    }
-
-	auto nek = to_fourier(ne);
-	auto Tik = to_fourier(Ti);
-	auto Tek = to_fourier(Te);
-	auto phik = to_fourier(phi);
-	auto Pik = to_fourier(Pi);
-	auto Pek = to_fourier(Pe);
-
-	auto dndk = derivk(nek, k);
-	auto dphidk = derivk(phik, k);
-	auto dpedk = derivk(Pek, k);
-	auto dpidk = derivk(Pik, k);
-
-	// Calculate ion and electron gyrofrequencies - qb/m
-	double Oci = e * Bmag / mi;
-	double Oce = e * Bmag / me;
+    fftw_complex *Tik;
+	Tik = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(Tik, 42, nx*nyk* sizeof(fftw_complex));
 	
-	/**/
-	//Continue here.
-	/**/
+	double *Te;
+	Te = (double*) fftw_malloc(nx*ny*sizeof(double));
+	
+	fftw_complex *Tek;
+	Tek = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(Tek, 42, nx*nyk* sizeof(fftw_complex)); //test extra to testbed
 
+    double *Pi;
+	Pi = (double*) fftw_malloc(nx*ny*sizeof(double));
+	
+	fftw_complex *Pik;
+	Pik = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(Pik, 42, nx*nyk* sizeof(fftw_complex)); //test
+
+    double *Pe;
+	Pe = (double*) fftw_malloc(nx*ny*sizeof(double));
+	
+	fftw_complex *Pek;
+	Pek = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(Pek, 42, nx*nyk* sizeof(fftw_complex)); //test
+
+	double *phi;
+	phi = (double*) fftw_malloc(nx*ny*sizeof(double));
+	
+	fftw_complex *phik;
+	phik = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(phik, 42, nx*nyk* sizeof(fftw_complex)); //test
+
+	double *tem;
+	tem = (double*) fftw_malloc(nx*ny*sizeof(double));
+	double *tem2;
+	tem2 = (double*) fftw_malloc(nx*ny*sizeof(double));
+
+	double *kx;
+	kx = (double*) fftw_malloc(nx*nyk*sizeof(double));
+	memset(kx, 42, nx*nyk* sizeof(double)); //test extra to testbed
+	double *ky;
+	ky = (double*) fftw_malloc(nx*nyk*sizeof(double));
+	memset(ky, 42, nx*nyk* sizeof(double)); //test extra to testbed
+
+	double *ksqu;
+	ksqu = (double*) fftw_malloc(nx*nyk*sizeof(double));
+	memset(ksqu, 42, nx*nyk* sizeof(double)); //test
+	
+	double *ninvksqu;
+	ninvksqu = (double*) fftw_malloc(nx*nyk*sizeof(double));
+	memset(ninvksqu, 42, nx*nyk* sizeof(double)); //test extra to testbed
+
+	// Make the Fourier grid
+	int FourierMeshType = 1; //1;// 1; // this "flag" should not be double, this should generally be avoided so make it int and compare it against ints instead
+	// Make the Fourier grid	
+	makeFourierMesh2D(Lx, Ly, kx, ky, ksqu, ninvksqu,FourierMeshType);
+	//Residuals and source terms
+	
+	fftw_complex *residualnk;
+	residualnk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(residualnk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+	fftw_complex *residualtik;
+	residualtik = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex));
+	memset(residualtik, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+	
+	fftw_complex *residualtek;
+	residualtek = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex));
+	memset(residualtek, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+
+	fftw_complex *sourcenk;
+	sourcenk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(sourcenk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+
+
+
+	fftw_complex *sourcetk;
+	sourcetk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+ // 	#pragma omp parallel for num_threads(8) collapse(3)
+
+	#pragma omp parallel for collapse(3)
+	for (int i = 0; i < nx; i++){
+		for (int j = 0; j < nyk; j++){
+			for (int k = 0; k < ncomp; k++){
+				sourcetk [j + nyk*i][k] = 0;
+				//printf("i = %d, j= %d, threadId = %d \n", i, j, omp_get_thread_num());
+		}
+		}
+	}
+
+	fftw_complex *nek_old;
+	nek_old = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	
+	fftw_complex *Tik_old;
+	Tik_old = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	
+	fftw_complex *Tek_old;
+	Tek_old = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+
+	//Initialize velocities
+	
+	double *vexbx;
+	vexbx = (double*) fftw_malloc(nx*ny*sizeof(double));
+	memset(vexbx, 42, nx*nyk* sizeof(double)); //added this here extra to testbed
+	
+	fftw_complex *vexbkx; // change name from vexbxk to vexbkx (defined differently in spectral funcs)
+	vexbkx = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(vexbkx, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+
+	
+	double *vexby; 
+	vexby = (double*) fftw_malloc(nx*ny*sizeof(double));
+	memset(vexby, 42, nx*nyk* sizeof(double)); //added this here extra to testbed since calc dt not tested 
+	
+	fftw_complex *vexbky; // change name from vexbyk to vexbky (defined differently in spectral funcs) 
+	vexbky = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(vexbky, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+
+	
+	double *vdmex;
+	vdmex = (double*) fftw_malloc(nx*ny*sizeof(double));
+	memset(vdmex, 42, nx*nyk* sizeof(double)); //added this here extra to testbed since calc dt not tested 
+	
+	
+	fftw_complex *vdmexk;
+	vdmexk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(vdmexk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+	
+	double *vdmey;
+	vdmey = (double*) fftw_malloc(nx*ny*sizeof(double));
+	memset(vdmey, 42, nx*nyk* sizeof(double)); //added this here extra to testbed since calc dt not tested 
+	
+	fftw_complex *vdmeyk;
+	vdmeyk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(vdmeyk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+	double *vdmix;
+	vdmix = (double*) fftw_malloc(nx*ny*sizeof(double));
+	memset(vdmix, 42, nx*ny* sizeof(double)); //added this here extra to testbed since calc dt not tested 
+	
+	
+	fftw_complex *vdmixk;
+	vdmixk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(vdmixk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+	double *vdmiy;
+	vdmiy = (double*) fftw_malloc(nx*ny*sizeof(double));
+	memset(vdmiy, 42, nx*ny* sizeof(double)); //added this here extra to testbed since calc dt not tested 
+	
+	fftw_complex *vdmiyk;
+	vdmiyk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(vdmiyk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+	
+	fftw_complex *veoxk;
+	veoxk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(veoxk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+	fftw_complex *veoyk;
+	veoyk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(veoyk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+	fftw_complex *vioxk;
+	vioxk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(vioxk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+
+	fftw_complex *vioyk;
+	vioyk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(vioyk, 42, nx*nyk* sizeof(fftw_complex)); //added this here extra to testbed
+	
+    // start a threading loop
+ //   for (int nThreads= 1; nThreads<=16; nThreads++){
+//	int nThreads = 8;
+//	omp_set_num_threads(nThreads); // asks openmp to create a team of threads
+//		omp_get_max_threads();
+    clock_t start_time = clock(); // or use: start_time= omp_get_wtime();
+//#pragma omp parallel for // start parallel region or fork threads
+//#pragma omp single // cause one thread to print number of threads used by the program
+ //      printf("num_threads = %d", omp_get_num_threads());
+//#pragma omp for reduction(+ : sum) // this is to split up loop iterations among the team threads. It include 2 clauses:1) creates a private variable and 2) cause threads to compute their sums locally and then combine their local sums to a single gloabl value
+//#pragma omp for // more natural option to parallel execution of for loops: no need for new loop bounds    
+#pragma omp parallel for collapse(2)
+	for (int i = 0; i < nx; i++){
+		for (int j = 0; j < ny; j++){
+				//tem[j + ny*i] =  tanh(b*(XX[j + ny*i] + c));
+				//tem2[j + ny*i] = .02*cos(4*M_PI * YY[j + ny*i]/Ly);
+                ne[j + ny*i] =  (a * tanh(b*(XX[j + ny*i] + c)) + d + a2 *tanh(b*(XX[j + ny*i] + c))+ d2 + .02*cos(4*M_PI * YY[j + ny*i]/Ly) *( exp( - bg * ((XX[j + ny*i] - xg)*(XX[j + ny*i] - xg))) + exp(-bg* ( XX[j + ny*i] - Lx + xg)*( XX[j + ny*i] - Lx + xg))  ) ) * 1.E11; 	
+				//ne[j + ny*i] =  (a * tanh(b*(XX[j + ny*i] + c)) + d + a2 * tanh(b*(XX[j + ny*i] + c2)) + d2 + .02*cos(4*M_PI * YY[j + ny*i]/Ly) *( exp( - bg * pow(XX[j + ny*i] - xg,2)) + exp(-bg* pow( XX[j + ny*i] - Lx + xg,2)  ) ) )    * 1.E11; 	
+
+                Ti[j + ny*i] = 1000.;
+			    Te[j + ny*i] = 1000.;
+
+                Pi[j + ny*i] = ne[j + ny*i] * 1000. * 1.38E-23; // test set 1000 instead of Te
+				//Pi[j + ny*i] = ne[j + ny*i] * Ti[j + ny*i] * kb;
+			    Pe[j + ny*i] = ne[j + ny*i] *1000.* 1.38E-23;
+				//Pe[j + ny*i] = ne[j + ny*i] * Te[j + ny*i] * kb;
+            }
+                
+        }
+
+ // convert to Fourier space
+        r2cfft(ne, nek);
+        r2cfft(Ti, Tik);
+	    r2cfft(Te, Tek);
+		r2cfft(phi, phik);
+		r2cfft(Pi, Pik);
+		r2cfft(Pe, Pek);
+
+        clock_t run_time = clock() - start_time; // end time
+    //#pragma omp single
+       // printf("num_threads = %d", omp_get_num_threads());
+      //  printf("Compute Time: %f seconds\n", (double) run_time); // %f is for double try 1f
+
+	fftw_complex *dndxk;
+	dndxk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(dndxk, 42, nx*nyk* sizeof(fftw_complex)); //test
+
+	fftw_complex *dndyk;
+	dndyk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(dndyk, 42, nx*nyk* sizeof(fftw_complex)); //test
+
+	fftw_complex *dphidxk;
+	dphidxk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(dphidxk, 42, nx*nyk* sizeof(fftw_complex)); //test
+	
+	fftw_complex *dphidyk;
+	dphidyk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(dphidyk, 42, nx*nyk* sizeof(fftw_complex)); //test
+
+	fftw_complex *dpedxk;
+	dpedxk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(dpedxk, 42, nx*nyk* sizeof(fftw_complex)); //test
+	
+	fftw_complex *dpedyk;
+	dpedyk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(dpedyk, 42, nx*nyk* sizeof(fftw_complex)); //test
+	
+	fftw_complex *dpidxk;
+	dpidxk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(dpidxk, 42, nx*nyk* sizeof(fftw_complex)); //test
+	
+	fftw_complex *dpidyk;
+	dpidyk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
+	memset(dpidyk, 42, nx*nyk* sizeof(fftw_complex)); //test
+
+	derivk(nek, kx, dndxk);
+	derivk(nek, ky, dndyk);
+	
+	
+	derivk(phik, kx, dphidxk);
+	derivk(phik, ky, dphidyk);
+	
+	derivk(Pek, kx, dpedxk);
+	derivk(Pek, ky, dpedyk);
+	derivk(Pik, kx, dpidxk);
+	derivk(Pik, ky, dpidyk);
+
+	// Calculate ion nd electron gyrofrequencies - qb/m
+	
+	double Oci = e*Bmag/mi;
+	double Oce = e*Bmag/me;
+	
+		
 	// Initialize and calculate collision frequencies
+	
+	
 	fftw_complex *nuink;
 	nuink = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
 	memset(nuink, 42, nx*nyk* sizeof(fftw_complex)); //test
