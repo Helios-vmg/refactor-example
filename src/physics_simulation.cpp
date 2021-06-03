@@ -2,9 +2,8 @@
 #define FFTW_ESTIMATE (1U << 6)
 #include "matrix.h"
 #include "types.h"
-#include<math.h>
-#include<stdio.h>
-# include <cmath>
+#include "collision.h"
+#include "potential.h"
 # include <cstdlib>
 # include <iostream>
 # include <iomanip>
@@ -125,11 +124,12 @@ std::tuple<Matrix<point2d>, Matrix<double>, Matrix<double>> makeFourierMesh2D(do
 		});
 	}
 
-	// Account for the [0][0] point since there is a divide by 0 issue.
+	//Account for the [0][0] point since there is a divide by 0 issue.
 	ninvksqu.get(0, 0) = -1;
 	
 	return {points, ksqu, ninvksqu};
 }
+
 
 int main(){
 
@@ -216,33 +216,30 @@ int main(){
 	auto vdmi = vexb;
 	Matrix<complex2d> vexbk(nx, nyk);
 	auto vdmek = vexbk;
-	auto vdmi = vexbk;
+	auto vdmik = vexbk;
 	auto veok = vexbk;
 	auto viok = vexbk;
 
 	auto [k, ksqu, ninvksqu] = makeFourierMesh2D(Lx, Ly, nx, nyk, 1);
 
-	for (size_t i = 0; i < nx; i++){
-		for (size_t j = 0; j < ny; j++){
-			auto p = mesh2d.get(j, i);
-			auto &nep = ne.get(j, i);
+	mesh2d.for_each([&ne, a, b, c, d, a2, d2, bg, xg, Lx, Ly, &Ti, &Te, &Pi, &Pe](auto j, auto i, auto p){
+		auto &nep = ne.get(j, i);
 
-			auto t = tanh(b * (p.x + c));
-			auto bg1 = -bg * (p.x - xg) * (p.x - xg);
-			auto bg2 = -bg * (p.x - Lx + xg) * (p.x - Lx + xg);
-			auto expsum = exp(bg1) + exp(bg2);
+		auto t = tanh(b * (p.x + c));
+		auto bg1 = -bg * (p.x - xg) * (p.x - xg);
+		auto bg2 = -bg * (p.x - Lx + xg) * (p.x - Lx + xg);
+		auto expsum = exp(bg1) + exp(bg2);
 
-			nep = a * t;
-			nep += d;
-			nep += a2 * t;
-			nep += d2;
-			nep += .02 * cos(2 * tau * p.y / Ly) * expsum;
-			nep *= 1.E11;
+		nep = a * t;
+		nep += d;
+		nep += a2 * t;
+		nep += d2;
+		nep += .02 * cos(2 * tau * p.y / Ly) * expsum;
+		nep *= 1.E11;
 
-			Te.get(j, i) = Ti.get(j, i) = 1000;
-			Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
-        }
-    }
+		Te.get(j, i) = Ti.get(j, i) = 1000;
+		Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
+	});
 
 	auto nek = to_fourier(ne);
 	auto Tik = to_fourier(Ti);
@@ -260,52 +257,28 @@ int main(){
 	double Oci = e * Bmag / mi;
 	double Oce = e * Bmag / me;
 	
-	/**/
-	//Continue here.
-	/**/
+	CollisionFreqCalculator cfc;
+	cfc.kb = kb;
+	cfc.mi = mi;
+	cfc.me = me;
+	cfc.nn = nn;
+	cfc.ri = ri;
+	cfc.rn = rn;
+	cfc.e = e;
+	cfc.Oci = Oci;
+	cfc.Oce = Oce;
+	cfc.eps0 = eps0;
+	
+	auto collision_frequencies = cfc.calculate_collision_frequencies(nek, Tik, Tek);
 
-	// Initialize and calculate collision frequencies
-	fftw_complex *nuink;
-	nuink = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(nuink, 42, nx*nyk* sizeof(fftw_complex)); //test
-	
-	fftw_complex *nuiek;
-	nuiek = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(nuiek, 42, nx*nyk* sizeof(fftw_complex)); //test
-	
-	fftw_complex *nuiik;
-	nuiik = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(nuiik, 42, nx*nyk* sizeof(fftw_complex)); //test
-	
-	fftw_complex *nuenk;
-	nuenk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(nuenk, 42, nx*nyk* sizeof(fftw_complex)); //test
-	
-	fftw_complex *nueek;
-	nueek = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(nueek, 42, nx*nyk* sizeof(fftw_complex)); //test
-	
-	fftw_complex *nueik;
-	nueik = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(nueik, 42, nx*nyk* sizeof(fftw_complex)); //test
-	
-	fftw_complex *isigPk;
-	isigPk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(isigPk, 42, nx*nyk* sizeof(fftw_complex)); //test
-	
-	fftw_complex *invnk;
-	invnk = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(invnk, 42, nx*nyk* sizeof(fftw_complex)); //test
+	PotentialSourceCalculator psc;
+	psc.Oci = Oci;
+	psc.Oce = Oce;
+	psc.B = B;
+	psc.u = u;
 
-	calcCollFreqk(nek, Tik, Tek , kb, eps0, mi, me, ri, rn, nn, Oci, Oce, e, nuink, nuiek, nuiik, nuenk, nueek, nueik, isigPk, invnk);
+	auto potSourcek = psc.calculate_potential_source(collision_frequencies, ksqu, Pik, Pek, dndk);
 	
-	// Calculate initial potential here
-	fftw_complex *potSourcek;
-	potSourcek = (fftw_complex*) fftw_malloc(nx*nyk* sizeof(fftw_complex)); 
-	memset(potSourcek, 42, nx*nyk* sizeof(fftw_complex)); //test 
-	
-	calcPotSourcek(dndxk, dndyk, Pik, Pek, nuink, nuiek, nuenk, nueik, isigPk, Oci, Oce, u, B, ksqu, potSourcek);
-
 	int phi_iter = potentialk(invnk, dndxk, dndyk, phik, potSourcek, kx, ky, ninvksqu, err_max, phi_iter_max);
 
 	// Initialize a time vector of length iter_max+1.

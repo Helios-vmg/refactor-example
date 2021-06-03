@@ -19,10 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\collision.cpp" />
     <ClCompile Include="..\src\matrix.cpp" />
     <ClCompile Include="..\src\physics_simulation.cpp" />
+    <ClCompile Include="..\src\potential.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\collision.h" />
+    <ClInclude Include="..\src\potential.h" />
     <ClInclude Include="..\src\types.h" />
     <ClInclude Include="..\src\matrix.h" />
   </ItemGroup>

@@ -24,6 +24,39 @@ public:
 		ret *= x;
 		return ret;
 	}
+	complex &operator/=(double x){
+		this->real /= x;
+		this->imag /= x;
+		return *this;
+	}
+	complex operator/(double x) const{
+		auto ret = *this;
+		ret /= x;
+		return ret;
+	}
+	complex &operator+=(const complex &c){
+		this->real += c.real;
+		this->imag += c.imag;
+		return *this;
+	}
+	complex operator+(const complex &c) const{
+		auto ret = *this;
+		ret += c;
+		return ret;
+	}
+	complex &operator-=(const complex &c){
+		this->real -= c.real;
+		this->imag -= c.imag;
+		return *this;
+	}
+	complex operator-(const complex &c) const{
+		auto ret = *this;
+		ret -= c;
+		return ret;
+	}
+	complex operator-() const{
+		return { -real, -imag };
+	}
 	complex2d operator*(const point2d &x) const;
 };
 
@@ -65,3 +98,20 @@ complex2d complex::operator*(const point2d &x) const{
 		*this * x.y,
 	};
 }
+
+template <typename T>
+class Freq{
+public:
+	//ion-ion
+	T ii;
+	//ion-electron
+	T ie;
+	//electron-ion
+	T ei;
+	//electron-neutral (did you mean "neutron"?)
+	T en;
+	//ion-neutral (did you mean "neutron"?)
+	T in;
+	//electron-electron
+	T ee;
+};
