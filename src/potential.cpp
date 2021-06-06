@@ -120,7 +120,7 @@ int PotentialSourceCalculator::potentialk(const FrequencyResults &fr, const Four
 		RHS = convolve2d(RHS, fr.invnk);
 		
 		auto phik_max_old = max_absComp(phik);
-		phik = std::move(RHS);
+		phik = RHS;
 		phik.elementwise_multiplication(fm.ninvksqu);
 		auto phik_max = max_absComp(phik);
 
