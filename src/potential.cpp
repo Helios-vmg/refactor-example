@@ -28,6 +28,10 @@ Matrix<complex> PotentialSourceCalculator::calculate_potential_source(
 	pikTerm = convolve2d(fr.isigPk, convolve2d(d2Pik, pikTerm));
 	pekTerm = convolve2d(fr.isigPk, convolve2d(d2Pek, pekTerm));
 
+	this->dndk->nan_check();
+	nan_check(params.u);
+	nan_check(params.B);
+	
 	Matrix<complex> ret(pikTerm.cols(), pikTerm.rows());
 	ret.for_each([&](auto j, auto i, auto &retp){
 		auto &dndkp = this->dndk->get(j, i);
