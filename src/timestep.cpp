@@ -25,10 +25,16 @@ double max(const Matrix<point2d> &m){
 	return ret;
 }
 
+#include <iostream>
+
 double TimeStepCalculator::calculate_time_step() const{
 	auto m = max(*this->vexb);
+	std::cout << "m = " << m << std::endl;
 	m = std::max(m, max(*this->vdmi));
+	std::cout << "m = " << m << std::endl;
 	m = std::max(m, max(*this->vdme));
+	std::cout << "m = " << m << std::endl;
 	m = std::max(m, max(u));
+	std::cout << "m = " << m << std::endl;
 	return std::min(CFL / (m * kmax), dt_max);
 }
