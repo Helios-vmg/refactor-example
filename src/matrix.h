@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 
 //#define CHECK_ACCESSES
 
@@ -164,12 +165,7 @@ public:
 		ret += other;
 		return ret;
 	}
-	void nan_check() const{
-		this->for_each_unordered([](auto &p){
-			if (::nan_check(p))
-				throw std::runtime_error("NaN check failed");
-		});
-	}
+	void nan_check() const;
 };
 
 Matrix<complex> to_fourier(const Matrix<double> &);
@@ -197,6 +193,11 @@ std::ostream &operator<<(std::ostream &stream, const point2d &p);
 std::ostream &operator<<(std::ostream &stream, const complex2d &p);
 
 template <typename T>
+std::ostream &operator<<(std::ostream &stream, const Freq<T> &x){
+	return stream << "Freq(" << x.ii << ", " << x.ie << ", " << x.ei << ", " << x.en << ", " << x.in << ", " << x.ee << ")";
+}
+
+template <typename T>
 std::ostream &operator<<(std::ostream &stream, const Matrix<T> &m){
 	auto cs = m.cols();
 	auto rs = m.rows();
@@ -206,4 +207,15 @@ std::ostream &operator<<(std::ostream &stream, const Matrix<T> &m){
 		stream << std::endl;
 	}
 	return stream;
+}
+
+template <typename T>
+void Matrix<T>::nan_check() const{
+	this->for_each_unordered([](auto &p){
+		if (::nan_check(p)){
+			std::stringstream stream;
+			stream << "NaN check failed: " << p;
+			throw std::runtime_error(stream.str());
+		}
+	});
 }
