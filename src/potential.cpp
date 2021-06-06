@@ -98,17 +98,19 @@ double max_absComp(const Matrix<complex> &arr3D){
 int PotentialSourceCalculator::potentialk(const FrequencyResults &fr, const FourierMesh2d &fm, Matrix<complex> &phik, const Matrix<complex> &potential_source, double err_max, int max_iter){
 	double it_error;
 	int iterations = 0;
+	potential_source.nan_check();
 	auto RHS = potential_source;
+	RHS.nan_check();
 	do{
 		auto grad_n_grad_phi = convolve2d(*this->dndk, derivk(phik, fm.k));
+		grad_n_grad_phi.nan_check();
 
 		RHS.for_each([&potential_source, &grad_n_grad_phi](auto j, auto i, auto &p){
 			complex2d g = grad_n_grad_phi.get(j, i);
 			p = potential_source.get(j, i) - g.x - g.y;
 		});
 
-		std::cout << "RHS = " << RHS;
-		std::cout << "fr.invnk = " << fr.invnk;
+		RHS.nan_check();
 		
 		RHS = convolve2d(RHS, fr.invnk);
 		

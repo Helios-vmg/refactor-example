@@ -167,3 +167,28 @@ static_assert(std::is_pod<complex2d>::value && sizeof(complex2d) == sizeof(doubl
 static_assert(std::is_pod<point2d>::value && sizeof(point2d) == sizeof(double) * 2, "oops!");
 static_assert(std::is_pod<Freq<double>>::value && sizeof(Freq<double>) == sizeof(double) * 6, "oops!");
 static_assert(std::is_pod<Freq<complex>>::value && sizeof(Freq<complex>) == sizeof(double) * 12, "oops!");
+
+inline bool nan_check(double x){
+	return std::isnan(x);
+}
+
+inline bool nan_check(const complex &x){
+	return nan_check(x.real) || nan_check(x.imag);
+}
+
+inline bool nan_check(const point2d &x){
+	return nan_check(x.x) || nan_check(x.y);
+}
+
+inline bool nan_check(const point3d &x){
+	return nan_check(x.x) || nan_check(x.y) || nan_check(x.z);
+}
+
+inline bool nan_check(const complex2d &x){
+	return nan_check(x.x) || nan_check(x.y);
+}
+
+template <typename T>
+bool nan_check(const Freq<T> &x){
+	return nan_check(x.ii) || nan_check(x.ie) || nan_check(x.ei) || nan_check(x.en) || nan_check(x.in) || nan_check(x.ee);
+}

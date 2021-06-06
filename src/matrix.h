@@ -164,6 +164,12 @@ public:
 		ret += other;
 		return ret;
 	}
+	void nan_check() const{
+		this->for_each_unordered([](auto &p){
+			if (::nan_check(p))
+				throw std::runtime_error("NaN check failed");
+		});
+	}
 };
 
 Matrix<complex> to_fourier(const Matrix<double> &);
