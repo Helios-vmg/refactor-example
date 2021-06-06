@@ -30,13 +30,13 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		
 		// Calculate thermal velocities
 		auto Vthi = sqrt(2 * kb * Tip / mi);
-		if (!nan_check(Vthi)){
+		if (nan_check(Vthi)){
 			std::stringstream stream;
 			stream << "2 * kb * Tip / mi = " << (2 * kb * Tip / mi) << ", Tip = " << Tip;
 			throw std::runtime_error(stream.str());
 		}
 		auto Vthe = sqrt(2 * kb * Tep / me);
-		if (!nan_check(Vthe)){
+		if (nan_check(Vthe)){
 			std::stringstream stream;
 			stream << "2 * kb * Tep / mi = " << (2 * kb * Tep / mi) << ", Tep = " << Tep;
 			throw std::runtime_error(stream.str());
@@ -50,7 +50,7 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		
 		// Calculate Debye length
 		auto lambdaD = sqrt(kbeps0 * Tep / (nep * e2));
-		if (!nan_check(Vthe)){
+		if (nan_check(Vthe)){
 			std::stringstream stream;
 			stream << "kbeps0 * Tep / (nep * e2) = " << (kbeps0 * Tep / (nep * e2)) << ", Tep = " << Tep << ", nep = " << nep;
 			throw std::runtime_error(stream.str());
