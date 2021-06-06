@@ -185,6 +185,8 @@ Matrix<complex2d> fourier_division(const Matrix<complex2d> &, const Matrix<compl
 
 template <typename T>
 Matrix<T> convolve2d(const Matrix<T> &a, const Matrix<T> &b){
+	a.nan_check();
+	b.nan_check();
 	auto temp = from_fourier(a);
 	temp.elementwise_multiplication(from_fourier(b));
 	return to_fourier(temp);
