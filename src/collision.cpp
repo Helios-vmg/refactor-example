@@ -11,15 +11,17 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 	Matrix<double> isigP(ne.cols(), ne.rows());
 	Matrix<double> invn(ne.cols(), ne.rows());
 
-	auto &params = *this;
-	
-	auto e2 = params.e * params.e;
+	auto e2 = e * e;
 	auto e4 = e2 * e2;
-	auto kbeps0 = params.eps0 * params.kb;
-	auto meeps0 = params.eps0 * params.me;
+	auto kbeps0 = eps0 * kb;
+	auto meeps0 = eps0 * me;
 	auto meeps02 = meeps0 * meeps0;
-	auto me_over_mi = params.me / params.mi;
+	auto me_over_mi = me / mi;
 	auto sqrt_me_over_mi = sqrt(me_over_mi);
+
+	Ti.nan_check();
+	Te.nan_check();
+	ne.nan_check();
 
 	ne.for_each([&, e2, e4, meeps02, me_over_mi, sqrt_me_over_mi](auto j, auto i, auto nep){
 		auto Tip = Ti.get(j, i);
@@ -27,17 +29,32 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		auto &freq = nu.get(j, i);
 		
 		// Calculate thermal velocities
-		auto Vthi = sqrt(2 * params.kb * Tip / params.mi);
-		auto Vthe = sqrt(2 * params.kb * Tep / params.me);
+		auto Vthi = sqrt(2 * kb * Tip / mi);
+		if (!nan_check(Vthi)){
+			std::stringstream stream;
+			stream << "2 * kb * Tip / mi = " << (2 * kb * Tip / mi) << ", Tip = " << Tip;
+			throw std::runtime_error(stream.str());
+		}
+		auto Vthe = sqrt(2 * kb * Tep / me);
+		if (!nan_check(Vthe)){
+			std::stringstream stream;
+			stream << "2 * kb * Tep / mi = " << (2 * kb * Tep / mi) << ", Tep = " << Tep;
+			throw std::runtime_error(stream.str());
+		}
 
 		// Calculate ion-neutral and electron-neutral collision frequencies
-		freq.in = params.ri + params.rn;
+		freq.in = ri + rn;
 		freq.in *= freq.in;
-		freq.in *= params.nn * Vthi * pi;
-		freq.en = params.nn * Vthi * pi * params.rn * params.rn;
+		freq.in *= nn * Vthi * pi;
+		freq.en = nn * Vthi * pi * rn * rn;
 		
 		// Calculate Debye length
 		auto lambdaD = sqrt(kbeps0 * Tep / (nep * e2));
+		if (!nan_check(Vthe)){
+			std::stringstream stream;
+			stream << "kbeps0 * Tep / (nep * e2) = " << (kbeps0 * Tep / (nep * e2)) << ", Tep = " << Tep << ", nep = " << nep;
+			throw std::runtime_error(stream.str());
+		}
 		
 		// Calculate plasma parameter
 		auto Lambda = 12 * pi * nep * (lambdaD * lambdaD * lambdaD);
@@ -55,7 +72,7 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		freq.ei = freq.ee;
 		
 		// Calculate "inverse Pedersen conductivity"
-		isigP.get(j, i) = 1.0 / (params.e * (freq.in / params.Oci + freq.en / params.Oce));
+		isigP.get(j, i) = 1.0 / (e * (freq.in / Oci + freq.en / Oce));
 
 		// Calculate the inverse of the density
 		// inverse of ne in Fourier space (which is needed for several terms in the temperature equation )	

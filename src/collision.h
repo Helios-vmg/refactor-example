@@ -24,16 +24,5 @@ public:
 
 class CollisionFreqCalculator{
 public:
-	double kb;
-	double mi;
-	double me;
-	double nn;
-	double ri;
-	double rn;
-	double e;
-	double Oci;
-	double Oce;
-	double eps0;
-
 	FrequencyResults calculate_collision_frequencies(const Matrix<complex> &nek, const Matrix<complex> &Tik, const Matrix<complex> &Tek) const;
 };

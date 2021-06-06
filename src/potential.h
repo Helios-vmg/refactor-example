@@ -27,10 +27,6 @@ public:
 
 class PotentialSourceCalculator{
 public:
-	double Oci;
-	double Oce;
-	point3d B;
-	point3d u;
 	const Matrix<complex2d> *dndk;
 	
 	Matrix<complex> calculate_potential_source(

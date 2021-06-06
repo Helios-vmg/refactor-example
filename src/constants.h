@@ -63,3 +63,5 @@ static const double B2 = Bmag * Bmag;
 // Set neutral wind. Generally, the last element will be 0.
 static const point3d u = {-500, 0, 0};
 static const double kmax = 1.0 / (2.0 * std::min(dx, dy));
+static const double Oci = e * Bmag / mi;
+static const double Oce = e * Bmag / me;

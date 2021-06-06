@@ -199,28 +199,12 @@ int main(){
 	auto dpidk = derivk(Pik, fourier_mesh.k);
 
 	// Calculate ion and electron gyrofrequencies - qb/m
-	double Oci = e * Bmag / mi;
-	double Oce = e * Bmag / me;
 	
 	CollisionFreqCalculator cfc;
-	cfc.kb = kb;
-	cfc.mi = mi;
-	cfc.me = me;
-	cfc.nn = nn;
-	cfc.ri = ri;
-	cfc.rn = rn;
-	cfc.e = e;
-	cfc.Oci = Oci;
-	cfc.Oce = Oce;
-	cfc.eps0 = eps0;
 	
 	auto collision_frequencies = cfc.calculate_collision_frequencies(nek, Tik, Tek);
 
 	PotentialSourceCalculator psc;
-	psc.Oci = Oci;
-	psc.Oce = Oce;
-	psc.B = B;
-	psc.u = u;
 	psc.dndk = &dndk;
 
 	auto potSourcek = psc.calculate_potential_source(collision_frequencies, fourier_mesh.ksqu, Pik, Pek);

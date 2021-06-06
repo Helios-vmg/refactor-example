@@ -21,8 +21,8 @@ Matrix<complex> PotentialSourceCalculator::calculate_potential_source(
 	pikTerm.for_each([&params, &pekTerm, &fr](auto j, auto i, auto &pikTermp){
 		auto &pekTermp = pekTerm.get(j, i);
 		auto &nukp = fr.nuk.get(j, i);
-		pikTermp = (nukp.ie - nukp.in) / params.Oci + nukp.ei / params.Oce;
-		pekTermp = nukp.ie / params.Oci + (nukp.ei  + nukp.en) / params.Oce;
+		pikTermp = (nukp.ie - nukp.in) / Oci + nukp.ei / Oce;
+		pekTermp = nukp.ie / Oci + (nukp.ei  + nukp.en) / Oce;
 	});
 
 	pikTerm = convolve2d(fr.isigPk, convolve2d(d2Pik, pikTerm));
@@ -32,16 +32,14 @@ Matrix<complex> PotentialSourceCalculator::calculate_potential_source(
 	pekTerm.nan_check();
 	
 	this->dndk->nan_check();
-	nan_check(params.u);
-	nan_check(params.B);
 	
 	Matrix<complex> ret(pikTerm.cols(), pikTerm.rows());
 	ret.for_each([&](auto j, auto i, auto &retp){
 		auto &dndkp = this->dndk->get(j, i);
 		
-		auto x = dndkp.y * params.u.z * params.B.x;
-		auto y = -dndkp.x * params.u.z * params.B.y;
-		auto z = (dndkp.x * params.u.y - dndkp.y * params.u.x) * params.B.z;
+		auto x = dndkp.y * u.z * B.x;
+		auto y = -dndkp.x * u.z * B.y;
+		auto z = (dndkp.x * u.y - dndkp.y * u.x) * B.z;
 
 		retp = x + y + z + pikTerm.get(j, i) + pekTerm.get(j, i);
 	});
