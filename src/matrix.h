@@ -211,6 +211,8 @@ std::ostream &operator<<(std::ostream &stream, const Matrix<T> &m){
 
 template <typename T>
 void Matrix<T>::nan_check() const{
+	if (!*this)
+		throw std::runtime_error("!*this");
 	this->for_each_unordered([](auto &p){
 		if (::nan_check(p)){
 			std::stringstream stream;
