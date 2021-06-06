@@ -15,8 +15,7 @@ std::ostream &operator<<(std::ostream &stream, const complex2d &p){
 Matrix<complex> to_fourier(const Matrix<double> &real){
 	real.nan_check();
 	Matrix<complex> ret(real.cols(), real.rows() / 2 + 1);
-	auto copy = real;
-	auto r2c = fftw_plan_dft_r2c_2d(real.cols(), real.rows(), &copy.get(0, 0), (fftw_complex *)&ret.get(0, 0), FFTW_ESTIMATE);
+	auto r2c = fftw_plan_dft_r2c_2d(real.cols(), real.rows(), (double *)&real.get(0, 0), (fftw_complex *)&ret.get(0, 0), FFTW_ESTIMATE);
 	fftw_execute(r2c);
 	fftw_destroy_plan(r2c);
 	fftw_cleanup();
