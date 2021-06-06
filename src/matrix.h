@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <cstring>
+#include <iostream>
 
 //#define CHECK_ACCESSES
 
@@ -181,4 +182,20 @@ Matrix<T> convolve2d(const Matrix<T> &a, const Matrix<T> &b){
 	auto temp = from_fourier(a);
 	temp.elementwise_multiplication(from_fourier(b));
 	return to_fourier(temp);
+}
+
+std::ostream &operator<<(std::ostream &stream, const complex &c);
+std::ostream &operator<<(std::ostream &stream, const point2d &p);
+std::ostream &operator<<(std::ostream &stream, const complex2d &p);
+
+template <typename T>
+std::ostream &operator<<(std::ostream &stream, const Matrix<T> &m){
+	auto cs = m.cols();
+	auto rs = m.rows();
+	for (size_t j = 0; j < rs; j++){
+		for (size_t i = 0; i < cs; i++)
+			stream << m.get(j, i) << " ";
+		stream << std::endl;
+	}
+	return stream;
 }

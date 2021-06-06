@@ -107,6 +107,8 @@ int PotentialSourceCalculator::potentialk(const FrequencyResults &fr, const Four
 			p = potential_source.get(j, i) - g.x - g.y;
 		});
 
+		std::cout 
+		
 		RHS = convolve2d(RHS, fr.invnk);
 		
 		auto phik_max_old = max_absComp(phik);

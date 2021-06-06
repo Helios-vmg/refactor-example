@@ -1,5 +1,17 @@
 #include "matrix.h"
 
+std::ostream &operator<<(std::ostream &stream, const complex &c){
+	return stream << "(" << c.real << ", " << c.imag << ")";
+}
+
+std::ostream &operator<<(std::ostream &stream, const point2d &p){
+	return stream << "(" << p.x << ", " << p.y << ")";
+}
+
+std::ostream &operator<<(std::ostream &stream, const complex2d &p){
+	return stream << "(" << p.x << ", " << p.y << ")";
+}
+
 Matrix<complex> to_fourier(const Matrix<double> &real){
 	Matrix<complex> ret(real.cols(), real.rows() / 2 + 1);
 	auto r2c = fftw_plan_dft_r2c_2d(real.cols(), real.rows(), (double *)&real.get(0, 0), (fftw_complex *)&ret.get(0, 0), FFTW_ESTIMATE);

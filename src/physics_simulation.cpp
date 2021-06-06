@@ -153,30 +153,6 @@ void print2DB(const std::string &filename, const Matrix<double> &m){
 	file.write((const char *)&m.get(0, 0), double_size * cell_count);
 }
 
-std::ostream &operator<<(std::ostream &stream, const complex &c){
-	return stream << "(" << c.real << ", " << c.imag << ")";
-}
-
-std::ostream &operator<<(std::ostream &stream, const point2d &p){
-	return stream << "(" << p.x << ", " << p.y << ")";
-}
-
-std::ostream &operator<<(std::ostream &stream, const complex2d &p){
-	return stream << "(" << p.x << ", " << p.y << ")";
-}
-
-template <typename T>
-std::ostream &operator<<(std::ostream &stream, const Matrix<T> &m){
-	auto cs = m.cols();
-	auto rs = m.rows();
-	for (size_t j = 0; j < rs; j++){
-		for (size_t i = 0; i < cs; i++)
-			stream << m.get(j, i) << " ";
-		stream << std::endl;
-	}
-	return stream;
-}
-
 int main(){
 	Matrix<double> ne(nx, ny);
 	auto Ti = ne;
