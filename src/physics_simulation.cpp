@@ -188,6 +188,9 @@ int main(){
 	
 	auto nek = to_fourier(ne);
 	auto Tik = to_fourier(Ti);
+	auto Ti2 = from_fourier(Tik);
+	Ti2.for_each_with(Ti2, [](auto, auto, auto &a, auto &b){ a -= b; });
+	std::cout << "Ti2 = " << Ti2;
 	auto Tek = to_fourier(Te);
 	auto phik = to_fourier(phi);
 	auto Pik = to_fourier(Pi);
