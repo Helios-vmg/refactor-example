@@ -182,7 +182,6 @@ int main(){
 
 			Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
 		});
-		std::cout << ne << std::endl;
 		print_matrix(XXgrid, YYgrid, mesh2d);
 	}
 	
@@ -251,10 +250,7 @@ int main(){
 		Pik = convolve2d(nek, Tik) * kb;
 
 		dndk = derivk(nek, fourier_mesh.k);
-		std::cout << "phik = " << phik;
-		std::cout << "fourier_mesh.k = " << fourier_mesh.k;
 		dphidk = derivk(phik, fourier_mesh.k);
-		std::cout << "dphidk = " << dphidk;
 		dpedk = derivk(Pek, fourier_mesh.k);
 		dpidk = derivk(Pik, fourier_mesh.k);
 		
@@ -264,10 +260,7 @@ int main(){
 		phi_iter = psc.potentialk(collision_frequencies, fourier_mesh, phik, potSourcek, err_max, phi_iter_max);
 		// Calculate all  velocities
 		vexbk = calcV_ExBk(dphidk);
-		std::cout << "vexbk = " << vexbk;
-		return 0;
 		vexb = from_fourier(vexbk);
-		std::cout << "vexb = " << vexb;
 		vdmek = calc_diamag(dpedk, -e, nek);
 		vdmik = calc_diamag(dpidk, e, nek);
 		vdme = from_fourier(vdmek);
