@@ -180,16 +180,16 @@ int main(){
 			nep += .02 * cos(2 * tau * p.y / Ly) * expsum;
 			nep *= 1.E11;
 
-			Te.get(j, i) = Ti.get(j, i) = 1000;
 			Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
 		});
 		print_matrix(XXgrid, YYgrid, mesh2d);
 	}
 	
 	auto nek = to_fourier(ne);
+	std::cout << "Ti(before) = " << Ti;
 	auto Tik = to_fourier(Ti);
+	std::cout << "Ti(after) = " << Ti;
 	auto Ti2 = from_fourier(Tik);
-	Ti2.for_each_with(Ti2, [](auto, auto, auto &a, auto &b){ a -= b; });
 	std::cout << "Ti2 = " << Ti2;
 	auto Tek = to_fourier(Te);
 	auto phik = to_fourier(phi);
