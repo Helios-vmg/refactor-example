@@ -7,8 +7,6 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 	auto Ti = from_fourier(Tik);
 	auto Te = from_fourier(Tek);
 
-	std::cout << "Ti = " << Ti;
-
 	Matrix<Freq<double>> nu(ne.cols(), ne.rows());
 	Matrix<double> isigP(ne.cols(), ne.rows());
 	Matrix<double> invn(ne.cols(), ne.rows());
