@@ -6,6 +6,7 @@
 #include <memory>
 #include <algorithm>
 #include <stdexcept>
+#include <cstring>
 
 //#define CHECK_ACCESSES
 
