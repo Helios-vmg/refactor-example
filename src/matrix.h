@@ -106,6 +106,12 @@ public:
 		for (size_t i = w * h; i--;)
 			f(p[i]);
 	}
+	template <typename F>
+	void for_each_unordered(const F &f) const{
+		auto p = this->matrix.get();
+		for (size_t i = w * h; i--;)
+			f(p[i]);
+	}
 	template <typename T2>
 	Matrix<T> &operator*=(const T2 &x){
 		this->for_each_unordered([x](auto &p){
@@ -114,22 +120,43 @@ public:
 		return *this;
 	}
 	template <typename T2>
-	Matrix<T> operator*(const T2 &x) const{
+	Matrix<T> operator*(const T2 &x) const &{
 		auto ret = *this;
 		ret *= x;
 		return ret;
 	}
-	void elementwise_multiplication(const Matrix &other){
+	template <typename T2>
+	Matrix<T> operator*(const T2 &x) &&{
+		*this *= x;
+		return std::move(*this);
+	}
+	template <typename T2>
+	void elementwise_multiplication(const Matrix<T2> &other){
 		this->for_each([other](auto j, auto i, auto &p){
 			p *= other.get(j, i);
 		});
+	}
+	Matrix<T> &operator+=(const Matrix &other){
+		this->for_each([&other](auto j, auto i, auto &p){
+			p += other.get(j, i);
+		});
+		return *this;
+	}
+	Matrix<T> operator+(const Matrix &other) const{
+		auto ret = *this;
+		ret += other;
+		return ret;
 	}
 };
 
 Matrix<complex> to_fourier(const Matrix<double> &);
 Matrix<Freq<complex>> to_fourier(const Matrix<Freq<double>> &);
 Matrix<double> from_fourier(const Matrix<complex> &);
+Matrix<point2d> from_fourier(const Matrix<complex2d> &);
 Matrix<complex> derivk(const Matrix<complex> &, const Matrix<double> &);
 Matrix<complex2d> derivk(const Matrix<complex> &, const Matrix<point2d> &);
+Matrix<complex2d> derivk(const Matrix<complex2d> &, const Matrix<point2d> &);
 Matrix<complex> laplaciank(const Matrix<complex> &, const Matrix<double> &);
 Matrix<complex> convolve2d(const Matrix<complex> &, const Matrix<complex> &);
+Matrix<complex2d> convolve2d(const Matrix<complex2d> &, const Matrix<complex2d> &);
+Matrix<complex2d> fourier_division(const Matrix<complex2d> &, const Matrix<complex> &);

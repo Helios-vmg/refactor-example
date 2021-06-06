@@ -11,6 +11,9 @@ public:
 	double real;
 	double imag;
 
+	double sqabs() const{
+		return real * real + imag * imag;
+	}
 	double abs() const{
 		return sqrt(real * real + imag * imag);
 	}
@@ -66,6 +69,29 @@ class complex2d{
 public:
 	complex x;
 	complex y;
+	complex2d &operator+=(const complex2d &c){
+		this->x += c.x;
+		this->y += c.y;
+		return *this;
+	}
+	complex2d operator+(const complex2d &c) const{
+		auto ret = *this;
+		ret += c;
+		return ret;
+	}
+	complex2d &operator-=(const complex2d &c){
+		this->x -= c.x;
+		this->y -= c.y;
+		return *this;
+	}
+	complex2d operator-(const complex2d &c) const{
+		auto ret = *this;
+		ret -= c;
+		return ret;
+	}
+	complex2d operator-() const{
+		return { -x, -y };
+	}
 };
 
 class point2d{

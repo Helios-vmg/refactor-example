@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "collision.h"
 
 FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const Matrix<complex> &nek, const Matrix<complex> &Tik, const Matrix<complex> &Tek) const{

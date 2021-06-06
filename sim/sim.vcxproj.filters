@@ -41,5 +41,11 @@
     <ClInclude Include="..\src\potential.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\timestep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

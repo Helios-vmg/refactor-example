@@ -26,7 +26,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\collision.h" />
+    <ClInclude Include="..\src\constants.h" />
     <ClInclude Include="..\src\potential.h" />
+    <ClInclude Include="..\src\timestep.h" />
     <ClInclude Include="..\src\types.h" />
     <ClInclude Include="..\src\matrix.h" />
   </ItemGroup>
