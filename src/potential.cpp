@@ -107,7 +107,8 @@ int PotentialSourceCalculator::potentialk(const FrequencyResults &fr, const Four
 			p = potential_source.get(j, i) - g.x - g.y;
 		});
 
-		std::cout 
+		std::cout << "RHS = " << RHS;
+		std::cout << "fr.invnk = " << fr.invnk;
 		
 		RHS = convolve2d(RHS, fr.invnk);
 		
