@@ -294,6 +294,8 @@ int main(){
 		Pik = convolve2d(nek, Tik) * kb;
 
 		dndk = derivk(nek, fourier_mesh.k);
+		std::cout << "phik = " << phik;
+		std::cout << "fourier_mesh.k = " << fourier_mesh.k;
 		dphidk = derivk(phik, fourier_mesh.k);
 		std::cout << "dphidk = " << dphidk;
 		dpedk = derivk(Pek, fourier_mesh.k);
@@ -306,6 +308,7 @@ int main(){
 		// Calculate all  velocities
 		vexbk = calcV_ExBk(dphidk);
 		std::cout << "vexbk = " << vexbk;
+		return 0;
 		vexb = from_fourier(vexbk);
 		std::cout << "vexb = " << vexb;
 		vdmek = calc_diamag(dpedk, -e, nek);
