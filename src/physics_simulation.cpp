@@ -153,6 +153,30 @@ void print2DB(const std::string &filename, const Matrix<double> &m){
 	file.write((const char *)&m.get(0, 0), double_size * cell_count);
 }
 
+std::ostream &operator<<(std::ostream &stream, const complex &c){
+	return stream << "(" << c.real << ", " << c.imag << ")";
+}
+
+std::ostream &operator<<(std::ostream &stream, const point2d &p){
+	return stream << "(" << p.x << ", " << p.y << ")";
+}
+
+std::ostream &operator<<(std::ostream &stream, const complex2d &p){
+	return stream << "(" << p.x << ", " << p.y << ")";
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &stream, const Matrix<T> &m){
+	auto cs = m.cols();
+	auto rs = m.rows();
+	for (size_t j = 0; j < rs; j++){
+		for (size_t i = 0; i < cs; i++)
+			stream << m.get(j, i) << " ";
+		stream << std::endl;
+	}
+	return stream;
+}
+
 int main(){
 	Matrix<double> ne(nx, ny);
 	auto Ti = ne;
@@ -195,6 +219,7 @@ int main(){
 
 	auto dndk = derivk(nek, fourier_mesh.k);
 	auto dphidk = derivk(phik, fourier_mesh.k);
+	std::cout << "dphidk = " << dphidk;
 	auto dpedk = derivk(Pek, fourier_mesh.k);
 	auto dpidk = derivk(Pik, fourier_mesh.k);
 
@@ -251,7 +276,9 @@ int main(){
 	print2DArrf(phiinitial, phi);
 	
 	auto vexbk = calcV_ExBk(dphidk);
+	std::cout << "vexbk = " << vexbk;
 	auto vexb = from_fourier(vexbk);
+	std::cout << "vexb = " << vexb;
 	auto vdmek = calc_diamag(dpedk, -e, nek);
 	auto vdmik = calc_diamag(dpidk, e, nek);
 
@@ -288,7 +315,6 @@ int main(){
 
 		// Calculate time step
 		double dt = tsc.calculate_time_step();
-		std::cout << "dt = " << dt << std::endl;
 		// Update time
 		time.push_back(time.back() + dt);
 
