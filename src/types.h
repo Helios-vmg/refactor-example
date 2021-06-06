@@ -63,8 +63,6 @@ public:
 	complex2d operator*(const point2d &x) const;
 };
 
-static_assert(std::is_pod<complex>::value && sizeof(complex) == sizeof(double) * 2, "oops!");
-
 class complex2d{
 public:
 	complex x;
@@ -163,3 +161,9 @@ public:
 	//electron-electron
 	T ee;
 };
+
+static_assert(std::is_pod<complex>::value && sizeof(complex) == sizeof(double) * 2, "oops!");
+static_assert(std::is_pod<complex2d>::value && sizeof(complex2d) == sizeof(double) * 4, "oops!");
+static_assert(std::is_pod<point2d>::value && sizeof(point2d) == sizeof(double) * 2, "oops!");
+static_assert(std::is_pod<Freq<double>>::value && sizeof(Freq<double>) == sizeof(double) * 6, "oops!");
+static_assert(std::is_pod<Freq<complex>>::value && sizeof(Freq<complex>) == sizeof(double) * 12, "oops!");
