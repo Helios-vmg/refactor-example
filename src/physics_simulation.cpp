@@ -182,6 +182,7 @@ int main(){
 
 			Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
 		});
+		std::cout << ne << std::endl;
 		print_matrix(XXgrid, YYgrid, mesh2d);
 	}
 	

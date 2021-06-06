@@ -11,3 +11,5 @@ fftw-3.3.9
 *.db
 *.idb
 *.txt
+*.ilk
+*.exe.recipe

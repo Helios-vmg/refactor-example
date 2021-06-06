@@ -48,7 +48,7 @@ Matrix<double> from_fourier(const Matrix<complex> &c){
 	c.nan_check();
 	auto copy = c;
 	Matrix<double> ret(c.cols(), (c.rows() - 1) * 2);
-	auto c2r = fftw_plan_dft_c2r_2d(copy.cols(), copy.rows(), (fftw_complex *)&copy.get(0, 0), &ret.get(0, 0), FFTW_ESTIMATE);
+	auto c2r = fftw_plan_dft_c2r_2d(ret.cols(), ret.rows(), (fftw_complex *)&copy.get(0, 0), &ret.get(0, 0), FFTW_ESTIMATE);
 	fftw_execute(c2r);
 	fftw_destroy_plan(c2r);
 	fftw_cleanup();
@@ -59,7 +59,7 @@ Matrix<double> from_fourier(const Matrix<complex> &c){
 Matrix<point2d> from_fourier(const Matrix<complex2d> &c){
 	c.nan_check();
 	Matrix<point2d> ret(c.cols(), (c.rows() - 1) * 2);
-	int dims[2] = {c.cols(), c.rows()};
+	int dims[2] = {ret.cols(), ret.rows()};
 	auto c2r = fftw_plan_many_dft_c2r(2, dims, 2, (fftw_complex *)&c.get(0, 0), dims, 2, 1, &ret.get(0, 0).x, dims, 2, 1, FFTW_ESTIMATE);
 	fftw_execute(c2r);
 	fftw_destroy_plan(c2r);

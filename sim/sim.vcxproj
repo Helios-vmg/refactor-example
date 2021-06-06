@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\collision.cpp" />
+    <ClCompile Include="..\src\dummy.cpp" />
     <ClCompile Include="..\src\matrix.cpp" />
     <ClCompile Include="..\src\physics_simulation.cpp" />
     <ClCompile Include="..\src\potential.cpp" />
