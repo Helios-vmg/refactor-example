@@ -12,7 +12,7 @@ Matrix<complex> to_fourier(const Matrix<double> &real){
 Matrix<complex2d> to_fourier(const Matrix<point2d> &real){
 	Matrix<complex2d> ret(real.cols(), real.rows() / 2 + 1);
 	int dims[2] = {real.cols(), real.rows()};
-	auto r2c = fftw_plan_many_dft_r2c(2, dims, 2, (double *)&real.get(0, 0), dims, 2, 1, (fftw_complex *)&ret.get(0, 0), dims, 2, 1, FFTW_ESTIMATE);
+	auto r2c = fftw_plan_many_dft_r2c(2, dims, 2, (double *)&real.get(0, 0), nullptr, 2, 1, (fftw_complex *)&ret.get(0, 0), nullptr, 2, 1, FFTW_ESTIMATE);
 	fftw_execute(r2c);
 	fftw_destroy_plan(r2c);
 	fftw_cleanup();
@@ -22,7 +22,7 @@ Matrix<complex2d> to_fourier(const Matrix<point2d> &real){
 Matrix<Freq<complex>> to_fourier(const Matrix<Freq<double>> &input){
 	Matrix<Freq<complex>> ret(input.cols(), input.rows() / 2 + 1);
 	int dims[2] = {input.cols(), input.rows()};
-	auto r2c = fftw_plan_many_dft_r2c(2, dims, 6, (double *)&input.get(0, 0), dims, 6, 1, (fftw_complex *)&ret.get(0, 0), dims, 6, 1, FFTW_ESTIMATE);
+	auto r2c = fftw_plan_many_dft_r2c(2, dims, 6, (double *)&input.get(0, 0), nullptr, 6, 1, (fftw_complex *)&ret.get(0, 0), nullptr, 6, 1, FFTW_ESTIMATE);
 	fftw_execute(r2c);
 	fftw_destroy_plan(r2c);
 	fftw_cleanup();
