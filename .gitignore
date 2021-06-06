@@ -10,3 +10,4 @@ fftw-3.3.9
 *.user
 *.db
 *.idb
+*.txt

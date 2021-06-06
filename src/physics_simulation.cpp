@@ -12,21 +12,16 @@
 #include <cstdio>
 
 // Make x coordinates. We want them to change as we change the zeroth index and be constant as we change the first index.
-Matrix<point2d> makeSpatialMesh2D(size_t cols, size_t rows, double dx, double dy){
+Matrix<point2d> make_spatial_mesh(size_t cols, size_t rows){
 	Matrix<point2d> ret(cols, rows);
-
-	for(size_t col = 0; col < cols; col++){
-		for(size_t row = 0; row < rows; row++){
-			auto &point = ret.get(row, col);
-			point.x = col * dx;
-			point.y = row * dy;
-		}		
-	}
-
+	ret.for_each([](auto j, auto i, auto &p){
+		p.x = i * dx;
+		p.y = j * dy;
+	});
 	return ret;
 }
 
-void print2DArrf(const char *path, const Matrix<double> &m){
+void print_matrix(const char *path, const Matrix<double> &m){
 	std::ofstream stream(path);
 	if (!stream)
 		throw std::runtime_error("failed to open file");
@@ -42,7 +37,7 @@ void print2DArrf(const char *path, const Matrix<double> &m){
 	}
 }
 
-void print2DArrf(const char *path_x, const char *path_y, const Matrix<point2d> &m){
+void print_matrix(const char *path_x, const char *path_y, const Matrix<point2d> &m){
 	std::ofstream stream_x(path_x);
 	std::ofstream stream_y(path_y);
 	if (!stream_x || !stream_y)
@@ -130,7 +125,7 @@ std::string get_filename(const char *s, int n, int w = 8){
 	return stream.str();
 }
 
-void print2DB(const std::string &filename, const Matrix<double> &m){
+void print_binary_matrix(const std::string &filename, const Matrix<double> &m){
 	std::ofstream file(filename, std::ios::binary);
 	if (!file)
 		throw std::runtime_error("failed to open file");
@@ -154,9 +149,9 @@ void print2DB(const std::string &filename, const Matrix<double> &m){
 }
 
 int main(){
+	Matrix<double> Ti(nx, ny, 1000);
+	Matrix<double> Te(nx, ny, 1000);
 	Matrix<double> ne(nx, ny);
-	auto Ti = ne;
-	auto Te = ne;
 	auto Pi = ne;
 	auto Pe = ne;
 	auto phi = ne;
@@ -166,25 +161,30 @@ int main(){
 
 	FourierMesh2d fourier_mesh(Lx, Ly, nx, nyk, 1);
 
-	auto mesh2d = makeSpatialMesh2D(nx, nyk, dx, dy);
-	mesh2d.for_each([&ne, &Ti, &Te, &Pi, &Pe](auto j, auto i, auto p){
-		auto &nep = ne.get(j, i);
+	{
+		static const char * const XXgrid = "X.txt";
+		static const char * const YYgrid = "Y.txt";
+		auto mesh2d = make_spatial_mesh(nx, ny);
+		mesh2d.for_each([&ne, &Ti, &Te, &Pi, &Pe](auto j, auto i, auto p){
+			auto &nep = ne.get(j, i);
 
-		auto t = tanh(b * (p.x + c));
-		auto bg1 = -bg * (p.x - xg) * (p.x - xg);
-		auto bg2 = -bg * (p.x - Lx + xg) * (p.x - Lx + xg);
-		auto expsum = exp(bg1) + exp(bg2);
+			auto t = tanh(b * (p.x + c));
+			auto bg1 = -bg * (p.x - xg) * (p.x - xg);
+			auto bg2 = -bg * (p.x - Lx + xg) * (p.x - Lx + xg);
+			auto expsum = exp(bg1) + exp(bg2);
 
-		nep = a * t;
-		nep += d;
-		nep += a2 * t;
-		nep += d2;
-		nep += .02 * cos(2 * tau * p.y / Ly) * expsum;
-		nep *= 1.E11;
+			nep = a * t;
+			nep += d;
+			nep += a2 * t;
+			nep += d2;
+			nep += .02 * cos(2 * tau * p.y / Ly) * expsum;
+			nep *= 1.E11;
 
-		Te.get(j, i) = Ti.get(j, i) = 1000;
-		Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
-	});
+			Te.get(j, i) = Ti.get(j, i) = 1000;
+			Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
+		});
+		print_matrix(XXgrid, YYgrid, mesh2d);
+	}
 	
 	auto nek = to_fourier(ne);
 	auto Tik = to_fourier(Ti);
@@ -228,14 +228,11 @@ int main(){
 	static const char * const Teinitial = "Te_initial.txt";
 	static const char * const Tiinitial = "Ti_initial.txt";
 	static const char * const phiinitial = "phi_initial.txt";
-	static const char * const XXgrid = "X.txt";
-	static const char * const YYgrid = "Y.txt";
-	print2DArrf(XXgrid, YYgrid, mesh2d);
 
-	print2DArrf(neinitial, ne);
-	print2DArrf(Teinitial, Te);
-	print2DArrf(Tiinitial, Ti);
-	print2DArrf(phiinitial, phi);
+	print_matrix(neinitial, ne);
+	print_matrix(Teinitial, Te);
+	print_matrix(Tiinitial, Ti);
+	print_matrix(phiinitial, phi);
 	
 	auto vexbk = calcV_ExBk(dphidk);
 	auto vexb = from_fourier(vexbk);
@@ -332,10 +329,10 @@ int main(){
 			auto Tifilename = get_filename("Ti", saveNum, 5);
 			auto phifilename = get_filename("phi", saveNum, 5);
 			
-			print2DB(Tefilename, Te);
-			print2DB(Tifilename, Ti);
-			print2DB(phifilename, phi);
-			print2DB(nefilename, ne);
+			print_binary_matrix(Tefilename, Te);
+			print_binary_matrix(Tifilename, Ti);
+			print_binary_matrix(phifilename, phi);
+			print_binary_matrix(nefilename, ne);
 			
 			saveNum++;
 		}
