@@ -1,7 +1,6 @@
 #pragma once
 
 #define _USE_MATH_DEFINES // for C++
-#define FFTW_ESTIMATE (1U << 6)
 
 #include "types.h"
 #include <cmath>

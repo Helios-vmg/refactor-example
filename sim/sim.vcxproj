@@ -23,6 +23,7 @@
     <ClCompile Include="..\src\matrix.cpp" />
     <ClCompile Include="..\src\physics_simulation.cpp" />
     <ClCompile Include="..\src\potential.cpp" />
+    <ClCompile Include="..\src\timestep.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\collision.h" />

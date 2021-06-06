@@ -7,7 +7,12 @@
 #include <algorithm>
 #include <stdexcept>
 
-#define CHECK_ACCESSES
+//#define CHECK_ACCESSES
+
+struct MatrixDimensions{
+	size_t cols;
+	size_t rows;
+};
 
 template <typename T>
 class Matrix{
@@ -37,6 +42,7 @@ public:
 		auto p = this->matrix.get();
 		std::fill(p, p + w * h, init);
 	}
+	Matrix(const MatrixDimensions &d, const T &init = {}): Matrix(d.cols, d.rows, init){}
 	Matrix(const Matrix &other){
 		if (!other)
 			return;
@@ -88,6 +94,9 @@ public:
 #endif
 		return this->matrix.get()[col * this->h + row];
 	}
+	MatrixDimensions geom() const{
+		return { w, h };
+	}
 	size_t cols() const{
 		return this->w;
 	}
@@ -99,6 +108,12 @@ public:
 		for (size_t i = 0; i < w; i++)
 			for (size_t j = 0; j < h; j++)
 				f(j, i, this->get(j, i));
+	}
+	template <typename F, typename T2>
+	void for_each_with(const Matrix<T2> &other, const F &f){
+		for (size_t i = 0; i < w; i++)
+			for (size_t j = 0; j < h; j++)
+				f(j, i, this->get(j, i), other.get(j, i));
 	}
 	template <typename F>
 	void for_each_unordered(const F &f){
@@ -150,6 +165,7 @@ public:
 };
 
 Matrix<complex> to_fourier(const Matrix<double> &);
+Matrix<complex2d> to_fourier(const Matrix<point2d> &);
 Matrix<Freq<complex>> to_fourier(const Matrix<Freq<double>> &);
 Matrix<double> from_fourier(const Matrix<complex> &);
 Matrix<point2d> from_fourier(const Matrix<complex2d> &);
@@ -157,6 +173,11 @@ Matrix<complex> derivk(const Matrix<complex> &, const Matrix<double> &);
 Matrix<complex2d> derivk(const Matrix<complex> &, const Matrix<point2d> &);
 Matrix<complex2d> derivk(const Matrix<complex2d> &, const Matrix<point2d> &);
 Matrix<complex> laplaciank(const Matrix<complex> &, const Matrix<double> &);
-Matrix<complex> convolve2d(const Matrix<complex> &, const Matrix<complex> &);
-Matrix<complex2d> convolve2d(const Matrix<complex2d> &, const Matrix<complex2d> &);
 Matrix<complex2d> fourier_division(const Matrix<complex2d> &, const Matrix<complex> &);
+
+template <typename T>
+Matrix<T> convolve2d(const Matrix<T> &a, const Matrix<T> &b){
+	auto temp = from_fourier(a);
+	temp.elementwise_multiplication(from_fourier(b));
+	return to_fourier(temp);
+}

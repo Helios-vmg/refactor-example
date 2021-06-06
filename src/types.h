@@ -92,6 +92,12 @@ public:
 	complex2d operator-() const{
 		return { -x, -y };
 	}
+	complex2d &operator*=(const point2d &x);
+	complex2d operator*(const point2d &x) const{
+		auto ret = *this;
+		ret *= x;
+		return ret;
+	}
 };
 
 class point2d{
@@ -104,6 +110,16 @@ public:
 	}
 	double norm() const{
 		return sqrt(this->sqnorm());
+	}
+	point2d &operator*=(double x){
+		this->x *= x;
+		this->y *= x;
+		return *this;
+	}
+	point2d &operator*=(const point2d &other){
+		this->x *= other.x;
+		this->y *= other.y;
+		return *this;
 	}
 };
 
@@ -118,11 +134,17 @@ public:
 	}
 };
 
-complex2d complex::operator*(const point2d &x) const{
+inline complex2d complex::operator*(const point2d &x) const{
 	return {
 		*this * x.x,
 		*this * x.y,
 	};
+}
+
+inline complex2d &complex2d::operator*=(const point2d &x){
+	this->x *= x.x;
+	this->y *= x.y;
+	return *this;
 }
 
 template <typename T>
