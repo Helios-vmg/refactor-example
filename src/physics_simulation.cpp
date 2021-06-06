@@ -186,11 +186,7 @@ int main(){
 	}
 	
 	auto nek = to_fourier(ne);
-	std::cout << "Ti(before) = " << Ti;
 	auto Tik = to_fourier(Ti);
-	std::cout << "Ti(after) = " << Ti;
-	auto Ti2 = from_fourier(Tik);
-	std::cout << "Ti2 = " << Ti2;
 	auto Tek = to_fourier(Te);
 	auto phik = to_fourier(phi);
 	auto Pik = to_fourier(Pi);

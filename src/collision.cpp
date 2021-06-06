@@ -1,6 +1,14 @@
 #include "constants.h"
 #include "collision.h"
 
+const auto e2 = e * e;
+const auto e4 = e2 * e2;
+const auto kbeps0 = eps0 * kb;
+const auto meeps0 = eps0 * me;
+const auto meeps02 = meeps0 * meeps0;
+const auto me_over_mi = me / mi;
+const auto sqrt_me_over_mi = sqrt(me_over_mi);
+
 FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const Matrix<complex> &nek, const Matrix<complex> &Tik, const Matrix<complex> &Tek) const{
 	//The reason we have to convert all of this to real space is because we can't take square roots or reciprocals in Fourier space
 	auto ne = from_fourier(nek);
@@ -11,19 +19,11 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 	Matrix<double> isigP(ne.cols(), ne.rows());
 	Matrix<double> invn(ne.cols(), ne.rows());
 
-	auto e2 = e * e;
-	auto e4 = e2 * e2;
-	auto kbeps0 = eps0 * kb;
-	auto meeps0 = eps0 * me;
-	auto meeps02 = meeps0 * meeps0;
-	auto me_over_mi = me / mi;
-	auto sqrt_me_over_mi = sqrt(me_over_mi);
-
 	Ti.nan_check();
 	Te.nan_check();
 	ne.nan_check();
 
-	ne.for_each([&, e2, e4, meeps02, me_over_mi, sqrt_me_over_mi](auto j, auto i, auto nep){
+	ne.for_each([&](auto j, auto i, auto nep){
 		auto Tip = Ti.get(j, i);
 		auto Tep = Te.get(j, i);
 		auto &freq = nu.get(j, i);
@@ -59,8 +59,25 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		// Calculate plasma parameter
 		auto Lambda = 12 * pi * nep * (lambdaD * lambdaD * lambdaD);
 
+		if (Lambda < 0){
+			std::stringstream stream;
+			stream << "12 * pi * nep * (lambdaD * lambdaD * lambdaD) = " << Lambda << " < 0, nep = " << nep << ", lambdaD = " << lambdaD;
+			throw std::runtime_error(stream.str());
+		}
+
 		// Calculate electron-electron collision frequency
 		freq.ee = nep * e4 * log(Lambda / 3) / (tau * meeps02 * (Vthe * Vthe * Vthe));
+
+		if (nan_check(freq.ee)){
+			std::stringstream stream;
+			stream << "nep * e4 * log(Lambda / 3) / (tau * meeps02 * (Vthe * Vthe * Vthe)) = " << freq.ee << std::endl;
+			stream << "nep = " << nep << std::endl;
+			stream << "Lambda = " << Lambda << std::endl;
+			stream << "tau = " << tau << std::endl;
+			stream << "meeps02 = " << meeps02 << std::endl;
+			stream << "Vthe = " << Vthe << std::endl;
+			throw std::runtime_error(stream.str());
+		}
 
 		// Calculate ion-ion collision frequency
 		freq.ii = freq.ee * sqrt_me_over_mi;
