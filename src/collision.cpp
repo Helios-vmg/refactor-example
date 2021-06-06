@@ -50,7 +50,7 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		
 		// Calculate Debye length
 		auto lambdaD = sqrt(kbeps0 * Tep / (nep * e2));
-		if (nan_check(Vthe)){
+		if (nan_check(lambdaD)){
 			std::stringstream stream;
 			stream << "kbeps0 * Tep / (nep * e2) = " << (kbeps0 * Tep / (nep * e2)) << ", Tep = " << Tep << ", nep = " << nep;
 			throw std::runtime_error(stream.str());
@@ -59,7 +59,7 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		// Calculate plasma parameter
 		auto Lambda = 12 * pi * nep * (lambdaD * lambdaD * lambdaD);
 
-		if (Lambda < 0){
+		if (nan_check(Lambda) || Lambda < 0){
 			std::stringstream stream;
 			stream << "12 * pi * nep * (lambdaD * lambdaD * lambdaD) = " << Lambda << " < 0, nep = " << nep << ", lambdaD = " << lambdaD;
 			throw std::runtime_error(stream.str());
