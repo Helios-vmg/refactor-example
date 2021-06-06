@@ -60,7 +60,7 @@ Matrix<point2d> from_fourier(const Matrix<complex2d> &c){
 	c.nan_check();
 	Matrix<point2d> ret(c.cols(), (c.rows() - 1) * 2);
 	int dims[2] = {ret.cols(), ret.rows()};
-	auto c2r = fftw_plan_many_dft_c2r(2, dims, 2, (fftw_complex *)&c.get(0, 0), dims, 2, 1, &ret.get(0, 0).x, dims, 2, 1, FFTW_ESTIMATE);
+	auto c2r = fftw_plan_many_dft_c2r(2, dims, 2, (fftw_complex *)&c.get(0, 0), nullptr, 2, 1, &ret.get(0, 0).x, nullptr, 2, 1, FFTW_ESTIMATE);
 	fftw_execute(c2r);
 	fftw_destroy_plan(c2r);
 	fftw_cleanup();
