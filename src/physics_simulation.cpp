@@ -228,7 +228,9 @@ int main(){
 	int phi_iter = psc.potentialk(collision_frequencies, fourier_mesh, phik, potSourcek, err_max, phi_iter_max);
 	
 	// Initialize a time vector of length iter_max+1.
-	std::vector<double> time(iter_max + 1, 0.0);
+	std::vector<double> time;
+	time.reserve(iter_max);
+	time.push_back(0);
 
 	ne = from_fourier(nek);
 	Te = from_fourier(Tek);
@@ -286,8 +288,9 @@ int main(){
 
 		// Calculate time step
 		double dt = tsc.calculate_time_step();
+		std::cout << "dt = " << dt << std::endl;
 		// Update time
-		time[iter + 1] = time[iter] + dt;
+		time.push_back(time.back() + dt);
 
 		auto nek_old = nek;
 		auto Tek_old = Tek;
