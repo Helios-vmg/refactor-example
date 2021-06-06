@@ -219,7 +219,6 @@ int main(){
 
 	auto dndk = derivk(nek, fourier_mesh.k);
 	auto dphidk = derivk(phik, fourier_mesh.k);
-	std::cout << "dphidk = " << dphidk;
 	auto dpedk = derivk(Pek, fourier_mesh.k);
 	auto dpidk = derivk(Pik, fourier_mesh.k);
 
@@ -276,9 +275,7 @@ int main(){
 	print2DArrf(phiinitial, phi);
 	
 	auto vexbk = calcV_ExBk(dphidk);
-	std::cout << "vexbk = " << vexbk;
 	auto vexb = from_fourier(vexbk);
-	std::cout << "vexb = " << vexb;
 	auto vdmek = calc_diamag(dpedk, -e, nek);
 	auto vdmik = calc_diamag(dpidk, e, nek);
 
@@ -298,6 +295,7 @@ int main(){
 
 		dndk = derivk(nek, fourier_mesh.k);
 		dphidk = derivk(phik, fourier_mesh.k);
+		std::cout << "dphidk = " << dphidk;
 		dpedk = derivk(Pek, fourier_mesh.k);
 		dpidk = derivk(Pik, fourier_mesh.k);
 		
@@ -307,7 +305,9 @@ int main(){
 		phi_iter = psc.potentialk(collision_frequencies, fourier_mesh, phik, potSourcek, err_max, phi_iter_max);
 		// Calculate all  velocities
 		vexbk = calcV_ExBk(dphidk);
+		std::cout << "vexbk = " << vexbk;
 		vexb = from_fourier(vexbk);
+		std::cout << "vexb = " << vexb;
 		vdmek = calc_diamag(dpedk, -e, nek);
 		vdmik = calc_diamag(dpidk, e, nek);
 		vdme = from_fourier(vdmek);
