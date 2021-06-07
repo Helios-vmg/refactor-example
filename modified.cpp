@@ -620,7 +620,7 @@ int main (void){
 			RK4(Tik_old, dt, residualtik, sourcetk, stage, Tik);
 			{
 				char temp[64];
-				sprintf(save, "ne%05d.gkyl", saveNum++);
+				sprintf(temp, "ne%05d.gkyl", saveNum++);
 				print2DB(temp, ne);
 			}
 			
