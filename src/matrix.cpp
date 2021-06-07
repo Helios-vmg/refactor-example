@@ -77,7 +77,7 @@ Matrix<complex> operator*(const Matrix<complex> &a, const Matrix<double> &b){
 }
 
 Matrix<complex2d> operator*(const Matrix<complex> &a, const Matrix<point2d> &b){
-	Matrix<complex2d> ret(a.cols(), a.rows());
+	Matrix<complex2d> ret(a.geom());
 	ret.for_each([&a, &b](auto j, auto i, complex2d &p){
 		p = a.get(j, i) * b.get(j, i);
 	});
@@ -112,7 +112,7 @@ void square(Matrix<complex2d> &m){
 }
 
 template <typename T, typename T2>
-auto basic_derivk(const Matrix<T> &a, const T2 &b){
+auto basic_derivk(const Matrix<T> &a, const Matrix<T2> &b){
 	a.nan_check();
 	b.nan_check();
 	auto ret = a * b;

@@ -572,6 +572,7 @@ int main (void){
 	
 		// Calculate time step
 		double dt = calc_dt(u,vexbx, vexby, vdmix, vdmiy, vdmex, vdmey, CFL, kmax, dt_max);
+		std::cout << dt << std::endl;
 		// double dt = calc_dt(vexbx, vexby, vdmix, vdmiy, vdmex, vdmiy, CFL, kmax, dt_max);
 		// Update time
 		time[iter + 1] = time[iter] + dt;

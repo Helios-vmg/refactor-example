@@ -106,8 +106,8 @@ Matrix<complex> calc_residualt(const Matrix<complex2d> &vok, const Matrix<comple
 	return ret;
 }
 
-Matrix<complex> calc_sourcen(const Matrix<double> &ksqu, const Matrix<complex> &nk, double d){
-	return laplaciank(nk, ksqu) * d;
+Matrix<complex> calc_sourcen(const Matrix<double> &ksqu, const Matrix<complex> &nek, double d){
+	return laplaciank(nek, ksqu) * d;
 }
 
 Matrix<complex> RK4_1(double dt, const Matrix<complex> &residual, const Matrix<complex> &source, int stage){
@@ -300,6 +300,7 @@ int main(){
 
 		// Calculate time step
 		double dt = tsc.calculate_time_step();
+		std::cout << dt << std::endl;
 		// Update time
 		time.push_back(time.back() + dt);
 
@@ -345,7 +346,7 @@ int main(){
 			}
 		}
 
-		std::cout << "Iteration = " << iter << "    t = " << time[iter + 1] << "   phi_iter = " << phi_iter << std::endl;
+		std::cout << "Iteration = " << iter << "    t = " << time.back() << "   phi_iter = " << phi_iter << std::endl;
 
 		// Save data every saveFrequency time steps
 		if (iter / saveFrequency - saveNum == 0){
