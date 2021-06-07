@@ -62,6 +62,31 @@ void RK4(double f[][ncomp], double dt, double residual[][ncomp], double source[]
 void print2DB(char filename[], double arr[]);
 
 
+void print2DB(char filename[], double arr[][2]){ //binary 
+	
+    // open file to write solution
+    FILE *fp = fopen(filename, "wb"); if (!fp) return;
+
+    // write grid
+    uint64_t ndim = 2;
+    uint64_t cells[] = { nx,ny };
+    double lower[] = { 0,0 }, upper[] = { 1,1 }; //  test
+
+	uint64_t real_type = 2;
+    fwrite(&real_type, sizeof(uint64_t), 1, fp);
+
+    fwrite(&ndim, sizeof(uint64_t), 1, fp);
+    fwrite(cells, 2*sizeof(uint64_t), 1, fp);
+    fwrite(lower, 2*sizeof(double), 1, fp);
+    fwrite(upper, 2*sizeof(double), 1, fp);
+
+    uint64_t esznc = sizeof(double), size =nx*ny;
+    fwrite(&esznc, sizeof(uint64_t), 1, fp);
+    fwrite(&size, sizeof(uint64_t), 1, fp);
+ 
+    fwrite(&arr[0], esznc*size * 2, 1, fp);
+    fclose(fp);
+}
 
 int main (void){
 
@@ -614,6 +639,16 @@ int main (void){
 					
 			// Update variables using RK method
 			
+			{
+				char temp[64];
+				sprintf(temp, "residualnk%05d.gkyl", saveNum);
+				print2DB(temp, residualnk);
+			}
+			{
+				char temp[64];
+				sprintf(temp, "sourcenk%05d.gkyl", saveNum);
+				print2DB(temp, sourcenk);
+			}
 			RK4(nek_old, dt, residualnk, sourcenk, stage, nek);
 			
 				

@@ -68,20 +68,20 @@ Matrix<complex2d> calcV_ExBk(const Matrix<complex2d> &dphidk){
 	return ret;
 }
 
-const Matrix<complex2d> calc_diamag(const Matrix<complex2d> &dpdk, double qa, const Matrix<complex> &nak){
+const Matrix<complex2d> calc_diamag(const Matrix<complex2d> &dpdk, double qa, const Matrix<complex> &nek){
 	auto prediv = dpdk;
 	prediv.for_each_unordered([k = B.z / (B2 * qa)](auto &p){
 		auto copy = p;
 		p.x = copy.y * -k;
 		p.y = copy.x * k;
 	});
-	return fourier_division(prediv, nak);
+	return fourier_division(prediv, nek);
 }
 
-Matrix<complex> calc_residualn(const Matrix<complex2d> &vexbk, const Matrix<point2d> &k, const Matrix<complex> &nink){
-	auto dnink = derivk(nink, k);
+Matrix<complex> calc_residualn(const Matrix<complex2d> &vexbk, const Matrix<point2d> &k, const Matrix<complex> &nek){
+	auto dnink = derivk(nek, k);
 	auto mult = convolve2d(vexbk, dnink);
-	Matrix<complex> ret(mult.cols(), mult.rows());
+	Matrix<complex> ret(mult.geom());
 	ret.for_each([&mult](auto j, auto i, auto &p){
 		auto s = mult.get(j, i);
 		p = s.x + s.y;
@@ -145,6 +145,29 @@ void print_binary_matrix(const std::string &filename, const Matrix<double> &m){
 	const double lower[] = { 0, 0 };
 	const double upper[] = { 1, 1 };
 	std::uint64_t double_size = sizeof(double);
+	std::uint64_t cell_count = dimensions[0] * dimensions[1];
+
+	file.write((const char *)&real_type, sizeof(real_type));
+	file.write((const char *)&dimension_count, sizeof(dimension_count));
+	file.write((const char *)&dimensions, sizeof(dimensions));
+	file.write((const char *)&lower, sizeof(lower));
+	file.write((const char *)&upper, sizeof(upper));
+	file.write((const char *)&double_size, sizeof(double_size));
+	file.write((const char *)&cell_count, sizeof(cell_count));
+	file.write((const char *)&m.get(0, 0), double_size * cell_count);
+}
+
+void print_binary_matrix(const std::string &filename, const Matrix<complex> &m){
+	std::ofstream file(filename, std::ios::binary);
+	if (!file)
+		throw std::runtime_error("failed to open file");
+	
+	const std::uint64_t real_type = 2;
+    const std::uint64_t dimension_count = 2;
+    std::uint64_t dimensions[] = { m.cols(), m.rows() };
+	const double lower[] = { 0, 0 };
+	const double upper[] = { 1, 1 };
+	std::uint64_t double_size = sizeof(complex);
 	std::uint64_t cell_count = dimensions[0] * dimensions[1];
 
 	file.write((const char *)&real_type, sizeof(real_type));
@@ -311,14 +334,10 @@ int main(){
 			Matrix<complex> sourcetk(nx, nyk, {0, 0});
 					
 			// Update variables using RK method
-			auto temp = RK4_1(dt, residualnk, sourcenk, stage);
 			{
-				std::ofstream file(get_filename("temp", saveNum, 5));
-				file << temp;
-				std::ofstream file2(get_filename("nek", saveNum, 5));
-				file2 << nek;
+				print_binary_matrix(get_filename("residualnk", saveNum, 5), residualnk);
+				print_binary_matrix(get_filename("sourcenk", saveNum, 5), sourcenk);
 			}
-			nek = nek_old + temp;
 			nek = RK4(nek_old, dt, residualnk, sourcenk, stage);
 			Tik = RK4(Tik_old, dt, residualtik, sourcetk, stage);
 			{
