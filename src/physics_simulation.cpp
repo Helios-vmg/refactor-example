@@ -304,6 +304,9 @@ int main(){
 			// Update variables using RK method
 			nek = RK4(nek_old, dt, residualnk, sourcenk, stage);
 			Tik = RK4(Tik_old, dt, residualtik, sourcetk, stage);
+			{
+				print_binary_matrix(get_filename("ne", saveNum++, 5), from_fourier(nek));
+			}
 		}
 
 		std::cout << "Iteration = " << iter << "    t = " << time[iter + 1] << "   phi_iter = " << phi_iter << std::endl;
@@ -314,15 +317,11 @@ int main(){
 			Te = from_fourier(Tek);
 			Ti = from_fourier(Tik);
 			phi = from_fourier(phik);
-			auto nefilename = get_filename("ne", saveNum, 5);
-			auto Tefilename = get_filename("Te", saveNum, 5);
-			auto Tifilename = get_filename("Ti", saveNum, 5);
-			auto phifilename = get_filename("phi", saveNum, 5);
-			
-			print_binary_matrix(Tefilename, Te);
-			print_binary_matrix(Tifilename, Ti);
-			print_binary_matrix(phifilename, phi);
-			print_binary_matrix(nefilename, ne);
+
+			print_binary_matrix(get_filename("Te", saveNum, 5), Te);
+			print_binary_matrix(get_filename("Ti", saveNum, 5), Ti);
+			print_binary_matrix(get_filename("phi", saveNum, 5), phi);
+			print_binary_matrix(get_filename("ne", saveNum, 5), ne);
 			
 			saveNum++;
 		}
