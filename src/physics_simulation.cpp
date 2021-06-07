@@ -110,6 +110,15 @@ Matrix<complex> calc_sourcen(const Matrix<double> &ksqu, const Matrix<complex> &
 	return laplaciank(nk, ksqu) * d;
 }
 
+Matrix<complex> RK4_1(double dt, const Matrix<complex> &residual, const Matrix<complex> &source, int stage){
+	auto alpha = dt / (4 - stage);
+	auto ret = residual;
+	ret.for_each([alpha, &residual, &source](auto j, auto i, auto &p){
+		p = -(residual.get(j, i) - source.get(j, i)) * alpha;
+	});
+	return ret;
+}
+
 Matrix<complex> RK4(const Matrix<complex> &f, double dt, const Matrix<complex> &residual, const Matrix<complex> &source, int stage){
 	auto alpha = dt / (4 - stage);
 	auto ret = f;
@@ -302,6 +311,14 @@ int main(){
 			Matrix<complex> sourcetk(nx, nyk, {0, 0});
 					
 			// Update variables using RK method
+			auto temp = RK4_1(dt, residualnk, sourcenk, stage);
+			{
+				std::ofstream file(get_filename("temp", saveNum, 5));
+				file << temp;
+				std::ofstream file2(get_filename("nek", saveNum, 5));
+				file2 << nek;
+			}
+			nek = nek_old + temp;
 			nek = RK4(nek_old, dt, residualnk, sourcenk, stage);
 			Tik = RK4(Tik_old, dt, residualtik, sourcetk, stage);
 			{
