@@ -619,6 +619,11 @@ int main (void){
 				Arr3DArr3DAdd(vdmiyk, vexbkx, vioyk);
 					
 			// Get all residuals
+			{
+				char temp[64];
+				sprintf(temp, "ne0%05d.gkyl", saveNum);
+				print2DB(temp, ne);
+			}
 			
 			calc_residualn(vexbkx, vexbky, nek, residualnk, kx, ky);
 			
@@ -656,9 +661,10 @@ int main (void){
 			RK4(Tik_old, dt, residualtik, sourcetk, stage, Tik);
 			{
 				char temp[64];
-				sprintf(temp, "ne%05d.gkyl", saveNum++);
+				sprintf(temp, "ne%05d.gkyl", saveNum);
 				print2DB(temp, ne);
 			}
+			saveNum++;
 			
 		}
 		// added 

@@ -79,8 +79,8 @@ const Matrix<complex2d> calc_diamag(const Matrix<complex2d> &dpdk, double qa, co
 }
 
 Matrix<complex> calc_residualn(const Matrix<complex2d> &vexbk, const Matrix<point2d> &k, const Matrix<complex> &nek){
-	auto dnink = derivk(nek, k);
-	auto mult = convolve2d(vexbk, dnink);
+	auto dnekk = derivk(nek, k);
+	auto mult = convolve2d(vexbk, dnekk);
 	Matrix<complex> ret(mult.geom());
 	ret.for_each([&mult](auto j, auto i, auto &p){
 		auto s = mult.get(j, i);
@@ -325,6 +325,9 @@ int main(){
 			auto veok = vdmek + vexbk;
 			auto viok = vdmik + vexbk;
 			
+			{
+				print_binary_matrix(get_filename("ne0", saveNum, 5), from_fourier(nek));
+			}
 			// Get all residuals
 			auto residualnk = calc_residualn(vexbk, fourier_mesh.k, nek);
 			auto residualtek = calc_residualt(veok, Tek, fourier_mesh.k);
@@ -342,8 +345,9 @@ int main(){
 			nek = RK4(nek_old, dt, residualnk, sourcenk, stage);
 			Tik = RK4(Tik_old, dt, residualtik, sourcetk, stage);
 			{
-				print_binary_matrix(get_filename("ne", saveNum++, 5), from_fourier(nek));
+				print_binary_matrix(get_filename("ne", saveNum, 5), from_fourier(nek));
 			}
+			saveNum++;
 		}
 
 		std::cout << "Iteration = " << iter << "    t = " << time.back() << "   phi_iter = " << phi_iter << std::endl;
