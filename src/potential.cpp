@@ -79,10 +79,12 @@ FourierMesh2d::FourierMesh2d(double Lx, double Ly, size_t w, size_t h, int Fouri
 	}else if (FourierMeshType == 1){
 		this->k.for_each([&](auto j, auto i, auto &p){
 			//Use approximations for Kx, Ky, K^2
-			auto x = sin(p.x * dx2) / dx2;
-			auto y = sin(p.y * dy2) / dy2;
+			auto x2 = sin(p.x * dx2) / dx2;
+			auto y2 = sin(p.y * dy2) / dy2;
+			auto x = sin(p.x * dx) / dx;
+			auto y = sin(p.y * dy) / dy;
 			p = { x, y };
-			auto sqnorm = p.sqnorm();
+			auto sqnorm = point2d(x, y).sqnorm();
 			this->ksqu.get(j, i) = sqnorm;
 			this->ninvksqu.get(j, i) = -1.0 / sqnorm;
 		});
