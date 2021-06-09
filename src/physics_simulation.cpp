@@ -297,6 +297,7 @@ int main(){
 	print_binary_matrix(get_filename("invnk", 0, 5), collision_frequencies.invnk);
 	print_binary_matrix(get_filename("ksqu", 0, 5), fourier_mesh.ksqu);
 	print_binary_matrix(get_filename("ninvksqu", 0, 5), fourier_mesh.ninvksqu);
+	print_binary_matrix(get_filename("dndk", 0, 5), dndk);
 	
 	int phi_iter = psc.potentialk(collision_frequencies, fourier_mesh, phik, potSourcek, err_max, phi_iter_max);
 	
