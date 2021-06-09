@@ -519,6 +519,11 @@ int main (void){
 		sprintf(temp, "dphidyk%05d.gkyl", 0);
 		print2DB(temp, dphidyk);
 	}
+	{
+		char temp[64];
+		sprintf(temp, "phik%05d.gkyl", 0);
+		print2DB(temp, phik);
+	}
 	calcV_ExBk(dphidxk, dphidyk, B, B2, vexbkx, vexbky);
 	c2rfft(vexbkx, vexbx);
 	c2rfft(vexbky, vexby);

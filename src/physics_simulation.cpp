@@ -308,6 +308,7 @@ int main(){
 	print_matrix(Tiinitial, Ti);
 	print_matrix(phiinitial, phi);
 
+	print_binary_matrix(get_filename("phik", 0, 5), phik);
 	print_binary_matrix(get_filename("dphidk", 0, 5), dphidk);
 	
 	auto vexbk = calcV_ExBk(dphidk);

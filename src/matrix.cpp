@@ -68,7 +68,7 @@ Matrix<point2d> from_fourier(const Matrix<complex2d> &c){
 	return ret;
 }
 
-Matrix<complex> operator*(const Matrix<complex> &a, const Matrix<double> &b){
+static Matrix<complex> derivk_mult(const Matrix<complex> &a, const Matrix<double> &b){
 	auto ret = a;
 	ret.for_each([&b](auto j, auto i, auto &p){
 		p *= b.get(j, i);
@@ -76,7 +76,7 @@ Matrix<complex> operator*(const Matrix<complex> &a, const Matrix<double> &b){
 	return ret;
 }
 
-Matrix<complex2d> operator*(const Matrix<complex> &a, const Matrix<point2d> &b){
+static Matrix<complex2d> derivk_mult(const Matrix<complex> &a, const Matrix<point2d> &b){
 	Matrix<complex2d> ret(a.geom());
 	ret.for_each([&a, &b](auto j, auto i, complex2d &p){
 		p = a.get(j, i) * b.get(j, i);
@@ -84,7 +84,7 @@ Matrix<complex2d> operator*(const Matrix<complex> &a, const Matrix<point2d> &b){
 	return ret;
 }
 
-Matrix<complex2d> operator*(const Matrix<complex2d> &a, const Matrix<point2d> &b){
+static Matrix<complex2d> derivk_mult(const Matrix<complex2d> &a, const Matrix<point2d> &b){
 	Matrix<complex2d> ret = a;
 	ret.for_each([&b](auto j, auto i, complex2d &p){
 		p *= b.get(j, i);
@@ -92,19 +92,19 @@ Matrix<complex2d> operator*(const Matrix<complex2d> &a, const Matrix<point2d> &b
 	return ret;
 }
 
-void square(complex &c){
+static void square(complex &c){
 	auto temp = c.real;
 	c.real = -c.imag;
 	c.imag = temp;
 }
 
-void square(Matrix<complex> &m){
+static void square(Matrix<complex> &m){
 	m.for_each([](auto j, auto i, auto &p){
 		square(p);
 	});
 }
 
-void square(Matrix<complex2d> &m){
+static void square(Matrix<complex2d> &m){
 	m.for_each([](auto j, auto i, auto &p){
 		square(p.x);
 		square(p.y);
@@ -115,7 +115,7 @@ template <typename T, typename T2>
 auto basic_derivk(const Matrix<T> &a, const Matrix<T2> &b){
 	a.nan_check();
 	b.nan_check();
-	auto ret = a * b;
+	auto ret = derivk_mult(a, b);
 	square(ret);
 	return ret;
 }
@@ -135,7 +135,7 @@ Matrix<complex2d> derivk(const Matrix<complex2d> &a, const Matrix<point2d> &b){
 Matrix<complex> laplaciank(const Matrix<complex> &a, const Matrix<double> &b){
 	a.nan_check();
 	b.nan_check();
-	auto ret = a * b;
+	auto ret = derivk_mult(a, b);
 	ret.for_each_unordered([](auto &p){
 		p *= -1;
 	});
