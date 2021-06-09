@@ -10,15 +10,15 @@ start cmd /c ..\test ne00002.gkyl ^> ne00002.txt
 start cmd /c ..\test ne00003.gkyl ^> ne00003.txt
 start cmd /c ..\test ne00004.gkyl ^> ne00004.txt
 
-start cmd /c ..\test kx00001.gkyl 2 ^> kx00001.txt
-start cmd /c ..\test kx00002.gkyl 2 ^> kx00002.txt
-start cmd /c ..\test kx00003.gkyl 2 ^> kx00003.txt
-start cmd /c ..\test kx00004.gkyl 2 ^> kx00004.txt
+start cmd /c ..\test kx00001.gkyl 1 ^> kx00001.txt
+start cmd /c ..\test kx00002.gkyl 1 ^> kx00002.txt
+start cmd /c ..\test kx00003.gkyl 1 ^> kx00003.txt
+start cmd /c ..\test kx00004.gkyl 1 ^> kx00004.txt
 
-start cmd /c ..\test ky00001.gkyl 2 ^> ky00001.txt
-start cmd /c ..\test ky00002.gkyl 2 ^> ky00002.txt
-start cmd /c ..\test ky00003.gkyl 2 ^> ky00003.txt
-start cmd /c ..\test ky00004.gkyl 2 ^> ky00004.txt
+start cmd /c ..\test ky00001.gkyl 1 ^> ky00001.txt
+start cmd /c ..\test ky00002.gkyl 1 ^> ky00002.txt
+start cmd /c ..\test ky00003.gkyl 1 ^> ky00003.txt
+start cmd /c ..\test ky00004.gkyl 1 ^> ky00004.txt
 
 start cmd /c ..\test vexbkx00001.gkyl 2 ^> vexbkx00001.txt
 start cmd /c ..\test vexbkx00002.gkyl 2 ^> vexbkx00002.txt
