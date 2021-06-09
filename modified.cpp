@@ -1199,8 +1199,8 @@ void calcCollFreqk( double nek[][ncomp], double Tik[][ncomp], double Tek[][ncomp
 	
 	{
 		char temp[64];
-		sprintf(temp, "calculate_collision_frequencies_invnk%05d.gkyl", fileidx);
-		print2DB(temp, invnk);
+		sprintf(temp, "calculate_collision_frequencies_invn%05d.gkyl", fileidx);
+		print2DB(temp, invn);
 	}
 
 	// Take FFTs of everything now

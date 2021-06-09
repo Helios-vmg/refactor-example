@@ -28,7 +28,7 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 	Te.nan_check();
 	ne.nan_check();
 
-	print_binary_matrix(get_filename("calculate_collision_frequencies_ne", fileidx++, 5), ne);
+	print_binary_matrix(get_filename("calculate_collision_frequencies_ne", fileidx, 5), ne);
 
 	ne.for_each([&](auto j, auto i, auto nep){
 		auto Tip = Ti.get(j, i);
