@@ -58,7 +58,7 @@ FourierMesh2d::FourierMesh2d(double Lx, double Ly, size_t w, size_t h, int Fouri
 		for (size_t j = 0; j < h; j++)
 			this->k.get(j, i).x = tau * k_counter / Lx;
 	}
-		
+
 	// Make ky. Because we are using special FFTs for purely real valued functions, the last dimension (y in this case) only need n/2 + 1 points due to symmetry about the imaginary axis.
 	this->k.for_each([Ly](auto j, auto i, auto &p){
 		p.y = tau * j / Ly;
@@ -84,7 +84,7 @@ FourierMesh2d::FourierMesh2d(double Lx, double Ly, size_t w, size_t h, int Fouri
 			auto x = sin(p.x * dx) / dx;
 			auto y = sin(p.y * dy) / dy;
 			p = { x, y };
-			auto sqnorm = point2d{x, y}.sqnorm();
+			auto sqnorm = point2d{x2, y2}.sqnorm();
 			this->ksqu.get(j, i) = sqnorm;
 			this->ninvksqu.get(j, i) = -1.0 / sqnorm;
 		});
