@@ -1214,6 +1214,12 @@ void calcCollFreqk( double nek[][ncomp], double Tik[][ncomp], double Tek[][ncomp
 	r2cfft(isigP, isigPk);
 
 	
+	{
+		char temp[64];
+		sprintf(temp, "calculate_collision_frequencies_invnk%05d.gkyl", fileidx);
+		print2DB(temp, invnk);
+	}
+
 	fftw_free(ne);
 	fftw_free(Ti);
 	fftw_free(Te);

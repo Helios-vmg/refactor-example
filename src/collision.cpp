@@ -13,6 +13,7 @@ static int fileidx = 0;
 
 std::string get_filename(const char *s, int n, int w = 8);
 void print_binary_matrix(const std::string &filename, const Matrix<double> &m);
+void print_binary_matrix(const std::string &filename, const Matrix<complex> &m);
 
 FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const Matrix<complex> &nek, const Matrix<complex> &Tik, const Matrix<complex> &Tek) const{
 	//The reason we have to convert all of this to real space is because we can't take square roots or reciprocals in Fourier space
@@ -110,6 +111,8 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 	ret.isigPk = to_fourier(isigP);
 	ret.invnk = to_fourier(invn);
 
+	print_binary_matrix(get_filename("calculate_collision_frequencies_invnk", fileidx, 5), ret.invnk);
+	
 	fileidx++;
 	return ret;
 }

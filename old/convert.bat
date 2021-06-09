@@ -59,3 +59,7 @@ start cmd /c ..\test ksqu00000.gkyl ^> ksqu00000.txt
 start cmd /c ..\test ninvksqu00000.gkyl ^> ninvksqu00000.txt
 
 start cmd /c ..\test calculate_collision_frequencies_ne00000.gkyl ^> calculate_collision_frequencies_ne00000.txt
+
+start cmd /c ..\test calculate_collision_frequencies_invn00000.gkyl ^> calculate_collision_frequencies_invn00000.txt
+
+start cmd /c ..\test calculate_collision_frequencies_invnk00000.gkyl ^> calculate_collision_frequencies_invnk00000.txt
