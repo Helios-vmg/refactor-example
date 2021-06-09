@@ -489,6 +489,11 @@ int main (void){
 	}
 	{
 		char temp[64];
+		sprintf(temp, "ksqu%05d.gkyl", 0);
+		print2DB(temp, ksqu);
+	}
+	{
+		char temp[64];
 		sprintf(temp, "ninvksqu%05d.gkyl", 0);
 		print2DB(temp, ninvksqu);
 	}

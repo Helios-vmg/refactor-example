@@ -287,6 +287,7 @@ int main(){
 	auto potSourcek = psc.calculate_potential_source(collision_frequencies, fourier_mesh.ksqu, Pik, Pek);
 
 	print_binary_matrix(get_filename("potSourcek", 0, 5), potSourcek);
+	print_binary_matrix(get_filename("invnk", 0, 5), collision_frequencies.invnk);
 	print_binary_matrix(get_filename("ksqu", 0, 5), fourier_mesh.ksqu);
 	print_binary_matrix(get_filename("ninvksqu", 0, 5), fourier_mesh.ninvksqu);
 	
