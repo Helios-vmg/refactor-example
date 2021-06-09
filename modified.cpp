@@ -627,13 +627,13 @@ int main (void){
 			}
 			{
 				char temp[64];
-				sprintf(temp, "vexbxk%05d.gkyl", saveNum);
-				print2DB(temp, vexbxk);
+				sprintf(temp, "vexbkx%05d.gkyl", saveNum);
+				print2DB(temp, vexbkx);
 			}
 			{
 				char temp[64];
-				sprintf(temp, "vexbyk%05d.gkyl", saveNum);
-				print2DB(temp, vexbyk);
+				sprintf(temp, "vexbky%05d.gkyl", saveNum);
+				print2DB(temp, vexbky);
 			}
 			
 			{
