@@ -178,15 +178,10 @@ Matrix<complex2d> derivk(const Matrix<complex> &, const Matrix<point2d> &);
 Matrix<complex2d> derivk(const Matrix<complex2d> &, const Matrix<point2d> &);
 Matrix<complex> laplaciank(const Matrix<complex> &, const Matrix<double> &);
 Matrix<complex2d> fourier_division(const Matrix<complex2d> &, const Matrix<complex> &);
-
-template <typename T>
-Matrix<T> convolve2d(const Matrix<T> &a, const Matrix<T> &b){
-	a.nan_check();
-	b.nan_check();
-	auto temp = from_fourier(a);
-	temp.elementwise_multiplication(from_fourier(b));
-	return to_fourier(temp);
-}
+Matrix<complex> convolve2d(const Matrix<complex> &a, const Matrix<complex> &b);
+Matrix<complex2d> convolve2d(const Matrix<complex2d> &a, const Matrix<complex2d> &b);
+Matrix<complex> convolve2d(const Matrix<complex> &a, const Matrix<double> &b);
+Matrix<complex2d> convolve2d(const Matrix<complex2d> &a, const Matrix<point2d> &b);
 
 std::ostream &operator<<(std::ostream &stream, const complex &c);
 std::ostream &operator<<(std::ostream &stream, const point2d &p);

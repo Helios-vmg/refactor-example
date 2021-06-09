@@ -51,10 +51,8 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		}
 
 		// Calculate ion-neutral and electron-neutral collision frequencies
-		freq.in = ri + rn;
-		freq.in *= freq.in;
-		freq.in *= nn * Vthi * pi;
-		freq.en = nn * Vthi * pi * rn * rn;
+		freq.in = (ri + rn) * (ri + rn) * nn * pi * Vthi;
+		freq.en = rn * rn * nn * pi * Vthi;
 		
 		// Calculate Debye length
 		auto lambdaD = sqrt(kbeps0 * Tep / (nep * e2));

@@ -119,7 +119,7 @@ int PotentialSourceCalculator::potentialk(const FrequencyResults &fr, const Four
 
 		RHS.nan_check();
 		
-		RHS = convolve2d(RHS, fr.invnk);
+		RHS = convolve2d(RHS, fr.invn);
 		
 		auto phik_max_old = max_absComp(phik);
 		phik = RHS;

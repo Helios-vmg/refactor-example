@@ -251,7 +251,7 @@ int main(){
 		mesh2d.for_each([&ne, &Pi, &Pe](auto j, auto i, auto p){
 			auto &nep = ne.get(j, i);
 
-#if 0
+#if 1
 			auto t = tanh(b * (p.x + c));
 			auto part1 = p.x - xg;
 			auto part2 = p.x - Lx + xg;

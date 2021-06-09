@@ -152,3 +152,37 @@ Matrix<complex2d> fourier_division(const Matrix<complex2d> &a, const Matrix<comp
 	});
 	return to_fourier(a2);
 }
+
+template <typename T, typename T2>
+Matrix<T> basic_convolve2d_real(const Matrix<T> &a, const Matrix<T2> &b){
+	a.nan_check();
+	b.nan_check();
+	auto temp = from_fourier(a);
+	temp.elementwise_multiplication(b);
+	return to_fourier(temp);
+}
+
+template <typename T>
+Matrix<T> basic_convolve2d_complex(const Matrix<T> &a, const Matrix<T> &b){
+	a.nan_check();
+	b.nan_check();
+	auto temp = from_fourier(a);
+	temp.elementwise_multiplication(from_fourier(b));
+	return to_fourier(temp);
+}
+
+Matrix<complex> convolve2d(const Matrix<complex> &a, const Matrix<complex> &b){
+	return basic_convolve2d_complex(a, b);
+}
+
+Matrix<complex2d> convolve2d(const Matrix<complex2d> &a, const Matrix<complex2d> &b){
+	return basic_convolve2d_complex(a, b);
+}
+
+Matrix<complex> convolve2d(const Matrix<complex> &a, const Matrix<double> &b){
+	return basic_convolve2d_real(a, b);
+}
+
+Matrix<complex2d> convolve2d(const Matrix<complex2d> &a, const Matrix<point2d> &b){
+	return basic_convolve2d_real(a, b);
+}
