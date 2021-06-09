@@ -84,7 +84,7 @@ FourierMesh2d::FourierMesh2d(double Lx, double Ly, size_t w, size_t h, int Fouri
 			auto x = sin(p.x * dx) / dx;
 			auto y = sin(p.y * dy) / dy;
 			p = { x, y };
-			auto sqnorm = point2d(x, y).sqnorm();
+			auto sqnorm = point2d{x, y}.sqnorm();
 			this->ksqu.get(j, i) = sqnorm;
 			this->ninvksqu.get(j, i) = -1.0 / sqnorm;
 		});
