@@ -14,3 +14,5 @@ fftw-3.3.9
 *.ilk
 *.exe.recipe
 *.gkyl
+*.iobj
+*.ipdb

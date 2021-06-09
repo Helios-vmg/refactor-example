@@ -54,7 +54,7 @@ FourierMesh2d::FourierMesh2d(double Lx, double Ly, size_t w, size_t h, int Fouri
 		for (size_t j = 0; j < h; j++)
 			this->k.get(j, i).x = tau * i / Lx;
 	for (size_t i = w / 2; i < w; i++){
-		auto k_counter = (int)i - w;
+		double k_counter = (int)i - (int)w;
 		for (size_t j = 0; j < h; j++)
 			this->k.get(j, i).x = tau * k_counter / Lx;
 	}
