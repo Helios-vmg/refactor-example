@@ -326,7 +326,7 @@ int main(){
 			auto viok = vdmik + vexbk;
 			
 			{
-				print_binary_matrix(get_filename("ne0", saveNum, 5), from_fourier(nek));
+				print_binary_matrix(get_filename("ne0_", saveNum, 5), from_fourier(nek));
 			}
 			// Get all residuals
 			auto residualnk = calc_residualn(vexbk, fourier_mesh.k, nek);

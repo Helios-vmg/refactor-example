@@ -621,7 +621,7 @@ int main (void){
 			// Get all residuals
 			{
 				char temp[64];
-				sprintf(temp, "ne0%05d.gkyl", saveNum);
+				sprintf(temp, "ne0_%05d.gkyl", saveNum);
 				print2DB(temp, ne);
 			}
 			
