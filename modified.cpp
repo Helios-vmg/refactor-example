@@ -620,9 +620,31 @@ int main (void){
 					
 			// Get all residuals
 			{
+				c2rfft(nek, ne);
 				char temp[64];
 				sprintf(temp, "ne0_%05d.gkyl", saveNum);
 				print2DB(temp, ne);
+			}
+			{
+				char temp[64];
+				sprintf(temp, "vexbxk%05d.gkyl", saveNum);
+				print2DB(temp, vexbxk);
+			}
+			{
+				char temp[64];
+				sprintf(temp, "vexbyk%05d.gkyl", saveNum);
+				print2DB(temp, vexbyk);
+			}
+			
+			{
+				char temp[64];
+				sprintf(temp, "kx%05d.gkyl", saveNum);
+				print2DB(temp, kx);
+			}
+			{
+				char temp[64];
+				sprintf(temp, "ky%05d.gkyl", saveNum);
+				print2DB(temp, ky);
 			}
 			
 			calc_residualn(vexbkx, vexbky, nek, residualnk, kx, ky);
@@ -660,6 +682,7 @@ int main (void){
 				
 			RK4(Tik_old, dt, residualtik, sourcetk, stage, Tik);
 			{
+				c2rfft(nek, ne);
 				char temp[64];
 				sprintf(temp, "ne%05d.gkyl", saveNum);
 				print2DB(temp, ne);

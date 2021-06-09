@@ -1,3 +1,8 @@
+..\test ne0_00001.gkyl > ne0_00001.txt
+..\test ne0_00002.gkyl > ne0_00002.txt
+..\test ne0_00003.gkyl > ne0_00003.txt
+..\test ne0_00004.gkyl > ne0_00004.txt
+
 ..\test ne00001.gkyl > ne00001.txt
 ..\test ne00002.gkyl > ne00002.txt
 ..\test ne00003.gkyl > ne00003.txt

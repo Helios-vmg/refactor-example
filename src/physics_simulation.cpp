@@ -180,6 +180,52 @@ void print_binary_matrix(const std::string &filename, const Matrix<complex> &m){
 	file.write((const char *)&m.get(0, 0), double_size * cell_count);
 }
 
+void print_binary_matrix(const std::string &filename, const Matrix<complex2d> &m){
+	std::ofstream file(filename, std::ios::binary);
+	if (!file)
+		throw std::runtime_error("failed to open file");
+	
+	const std::uint64_t real_type = 2;
+    const std::uint64_t dimension_count = 2;
+    std::uint64_t dimensions[] = { m.cols(), m.rows() };
+	const double lower[] = { 0, 0 };
+	const double upper[] = { 1, 1 };
+	std::uint64_t double_size = sizeof(complex2d);
+	std::uint64_t cell_count = dimensions[0] * dimensions[1];
+
+	file.write((const char *)&real_type, sizeof(real_type));
+	file.write((const char *)&dimension_count, sizeof(dimension_count));
+	file.write((const char *)&dimensions, sizeof(dimensions));
+	file.write((const char *)&lower, sizeof(lower));
+	file.write((const char *)&upper, sizeof(upper));
+	file.write((const char *)&double_size, sizeof(double_size));
+	file.write((const char *)&cell_count, sizeof(cell_count));
+	file.write((const char *)&m.get(0, 0), double_size * cell_count);
+}
+
+void print_binary_matrix(const std::string &filename, const Matrix<point2d> &m){
+	std::ofstream file(filename, std::ios::binary);
+	if (!file)
+		throw std::runtime_error("failed to open file");
+	
+	const std::uint64_t real_type = 2;
+    const std::uint64_t dimension_count = 2;
+    std::uint64_t dimensions[] = { m.cols(), m.rows() };
+	const double lower[] = { 0, 0 };
+	const double upper[] = { 1, 1 };
+	std::uint64_t double_size = sizeof(point2d);
+	std::uint64_t cell_count = dimensions[0] * dimensions[1];
+
+	file.write((const char *)&real_type, sizeof(real_type));
+	file.write((const char *)&dimension_count, sizeof(dimension_count));
+	file.write((const char *)&dimensions, sizeof(dimensions));
+	file.write((const char *)&lower, sizeof(lower));
+	file.write((const char *)&upper, sizeof(upper));
+	file.write((const char *)&double_size, sizeof(double_size));
+	file.write((const char *)&cell_count, sizeof(cell_count));
+	file.write((const char *)&m.get(0, 0), double_size * cell_count);
+}
+
 int main(){
 	Matrix<double> Ti(nx, ny, 1000);
 	Matrix<double> Te(nx, ny, 1000);
@@ -327,6 +373,8 @@ int main(){
 			
 			{
 				print_binary_matrix(get_filename("ne0_", saveNum, 5), from_fourier(nek));
+				print_binary_matrix(get_filename("vexbk", saveNum, 5), vexbk);
+				print_binary_matrix(get_filename("k", saveNum, 5), fourier_mesh.k);
 			}
 			// Get all residuals
 			auto residualnk = calc_residualn(vexbk, fourier_mesh.k, nek);
