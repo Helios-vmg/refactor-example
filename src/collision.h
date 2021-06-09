@@ -7,6 +7,7 @@ public:
 	Matrix<Freq<complex>> nuk;
 	Matrix<complex> isigPk;
 	Matrix<complex> invnk;
+	Matrix<double> invn;
 
 	FrequencyResults() = default;
 	FrequencyResults(const FrequencyResults &) = default;

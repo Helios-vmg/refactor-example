@@ -108,6 +108,7 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 	ret.nuk = to_fourier(nu);
 	ret.isigPk = to_fourier(isigP);
 	ret.invnk = to_fourier(invn);
+	ret.invn = std::move(invn);
 
 	print_binary_matrix(get_filename("calculate_collision_frequencies_invnk", fileidx, 5), ret.invnk);
 	
