@@ -1118,7 +1118,7 @@ void calcCollFreqk( double nek[][ncomp], double Tik[][ncomp], double Tek[][ncomp
 	
 	{
 		char temp[64];
-		sprintf(temp, "calculate_collision_frequencies_ne%05d.gkyl", fileidx++);
+		sprintf(temp, "calculate_collision_frequencies_ne%05d.gkyl", fileidx);
 		print2DB(temp, ne);
 	}
 
@@ -1197,6 +1197,12 @@ void calcCollFreqk( double nek[][ncomp], double Tik[][ncomp], double Tek[][ncomp
 		}
 	}
 	
+	{
+		char temp[64];
+		sprintf(temp, "calculate_collision_frequencies_invnk%05d.gkyl", fileidx);
+		print2DB(temp, invnk);
+	}
+
 	// Take FFTs of everything now
 	r2cfft(nuin, nuink);
 	r2cfft(nuie, nuiek);
@@ -1221,7 +1227,7 @@ void calcCollFreqk( double nek[][ncomp], double Tik[][ncomp], double Tek[][ncomp
 	fftw_free(invn);
 	
 	
-	
+	fileidx++;
 
 }
 

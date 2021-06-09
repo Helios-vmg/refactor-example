@@ -102,11 +102,14 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 		// inverse of ne in Fourier space (which is needed for several terms in the temperature equation )	
 		invn.get(j, i) = 1.0 / nep;
 	});
+	
+	print_binary_matrix(get_filename("calculate_collision_frequencies_invn", fileidx, 5), invn);
 
 	FrequencyResults ret;
 	ret.nuk = to_fourier(nu);
 	ret.isigPk = to_fourier(isigP);
 	ret.invnk = to_fourier(invn);
 
+	fileidx++;
 	return ret;
 }
