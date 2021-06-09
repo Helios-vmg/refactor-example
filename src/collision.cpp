@@ -9,6 +9,11 @@ const auto meeps02 = meeps0 * meeps0;
 const auto me_over_mi = me / mi;
 const auto sqrt_me_over_mi = sqrt(me_over_mi);
 
+static int fileidx = 0;
+
+std::string get_filename(const char *s, int n, int w = 8);
+void print_binary_matrix(const std::string &filename, const Matrix<double> &m);
+
 FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const Matrix<complex> &nek, const Matrix<complex> &Tik, const Matrix<complex> &Tek) const{
 	//The reason we have to convert all of this to real space is because we can't take square roots or reciprocals in Fourier space
 	auto ne = from_fourier(nek);
@@ -22,6 +27,8 @@ FrequencyResults CollisionFreqCalculator::calculate_collision_frequencies(const 
 	Ti.nan_check();
 	Te.nan_check();
 	ne.nan_check();
+
+	print_binary_matrix(get_filename("calculate_collision_frequencies_ne", fileidx++, 5), ne);
 
 	ne.for_each([&](auto j, auto i, auto nep){
 		auto Tip = Ti.get(j, i);

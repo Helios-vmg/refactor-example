@@ -16,3 +16,4 @@ fftw-3.3.9
 *.gkyl
 *.iobj
 *.ipdb
+*.csv

@@ -52,7 +52,7 @@ start cmd /c ..\test phik00000.gkyl 2 ^> phik00000.txt
 
 start cmd /c ..\test potSourcek00000.gkyl 2 ^> potSourcek00000.txt
 
-start cmd /c ..\test invnk00000.gkyl ^> invnk00000.txt
+start cmd /c ..\test invnk00000.gkyl 2 ^> invnk00000.txt
 
 start cmd /c ..\test ksqu00000.gkyl ^> ksqu00000.txt
 

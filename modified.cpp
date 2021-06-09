@@ -1089,6 +1089,8 @@ double mag1DArray(double arr[]){
 	return sqrt(arr[0]*arr[0] + arr[1]*arr[1] + arr[2]*arr[2]);
 }
 
+static int fileidx = 0;
+
 // Calculate collision frequencies
 void calcCollFreqk( double nek[][ncomp], double Tik[][ncomp], double Tek[][ncomp] , double kb, double eps0, double mi, double me, double ri, double rn, double nn, double Oci, double Oce, double e, double nuink[][ncomp], double nuiek[][ncomp], double nuiik[][ncomp], double nuenk[][ncomp], double nueek[][ncomp], double nueik[][ncomp], double isigPk[][ncomp], double invnk[][ncomp]){	// Take inverse fft of nek, Tik, and Tek. 
 	// The reason we have to convert all of this to real space is because we can't take square roots or reciprocals in Fourier space
@@ -1113,6 +1115,12 @@ void calcCollFreqk( double nek[][ncomp], double Tik[][ncomp], double Tek[][ncomp
 	c2rfft(Tik, Ti);
 	c2rfft(Tek, Te);
 	
+	
+	{
+		char temp[64];
+		sprintf(temp, "calculate_collision_frequencies_ne%05d.gkyl", fileidx++);
+		print2DB(temp, ne);
+	}
 
 	// Set scalar doubles for variables that are needed in the loops
 	double Vthi, Vthe, lambdaD, Lambda;
