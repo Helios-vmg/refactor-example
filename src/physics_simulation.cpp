@@ -242,11 +242,16 @@ int main(){
 	{
 		static const char * const XXgrid = "X.txt";
 		static const char * const YYgrid = "Y.txt";
-		auto mesh2d = make_spatial_mesh(nx, ny);
+		Matrix<point2d> mesh2d(nx, ny);
+		mesh2d.for_each([](auto j, auto i, auto &p){
+			p.x = i * dx;
+			p.y = j * dy;
+		});
 		print_binary_matrix("mesh2d", mesh2d);
 		mesh2d.for_each([&ne, &Pi, &Pe](auto j, auto i, auto p){
 			auto &nep = ne.get(j, i);
 
+#if 0
 			auto t = tanh(b * (p.x + c));
 			auto part1 = p.x - xg;
 			auto part2 = p.x - Lx + xg;
@@ -255,7 +260,10 @@ int main(){
 			auto expsum = exp(bg1) + exp(bg2);
 			auto complicated_term = .02 * cos(2 * tau * p.y / Ly) * expsum;
 
-			nep = 1.E11 * (a * t + d + a2 * t + d2 + complicated_term);
+			nep = (a * t + d + a2 * t + d2 + complicated_term) * 1.E11;
+#else
+			nep = (a * tanh(b * (p.x + c)) + d + a2 * tanh(b * (p.x + c)) + d2 + .02 * cos(2 * tau * p.y / Ly) * (exp(-bg * ((p.x - xg) * (p.x - xg))) + exp(-bg * ((p.x - Lx + xg) * (p.x - Lx + xg))))) * 1.E11;
+#endif
 
 			Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
 		});
