@@ -47,3 +47,5 @@ start cmd /c ..\test dphidxk00002.gkyl 2 ^> dphidxk00002.txt
 start cmd /c ..\test dphidyk00000.gkyl 2 ^> dphidyk00000.txt
 start cmd /c ..\test dphidyk00001.gkyl 2 ^> dphidyk00001.txt
 start cmd /c ..\test dphidyk00002.gkyl 2 ^> dphidyk00002.txt
+
+start cmd /c ..\test phik00000.gkyl 2 ^> phik00000.txt

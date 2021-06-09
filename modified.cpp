@@ -477,6 +477,11 @@ int main (void){
 	
 	calcPotSourcek(dndxk, dndyk, Pik, Pek, nuink, nuiek, nuenk, nueik, isigPk, Oci, Oce, u, B, ksqu, potSourcek);
 
+	{
+		char temp[64];
+		sprintf(temp, "potSourcek%05d.gkyl", 0);
+		print2DB(temp, potSourcek);
+	}
 	int phi_iter = potentialk(invnk, dndxk, dndyk, phik, potSourcek, kx, ky, ninvksqu, err_max, phi_iter_max);
 
 	// Initialize a time vector of length iter_max+1.

@@ -33,3 +33,5 @@ start cmd /c ..\test sourcenk00004.gkyl 2 ^> sourcek00004.txt
 start cmd /c ..\test dphidk00000.gkyl 4 ^> dphidk00000.txt
 start cmd /c ..\test dphidk00001.gkyl 4 ^> dphidk00001.txt
 start cmd /c ..\test dphidk00002.gkyl 4 ^> dphidk00002.txt
+
+start cmd /c ..\test phik00000.gkyl 2 ^> phik00000.txt

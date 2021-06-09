@@ -286,6 +286,8 @@ int main(){
 
 	auto potSourcek = psc.calculate_potential_source(collision_frequencies, fourier_mesh.ksqu, Pik, Pek);
 
+	print_binary_matrix(get_filename("potSourcek", 0, 5), potSourcek);
+	
 	int phi_iter = psc.potentialk(collision_frequencies, fourier_mesh, phik, potSourcek, err_max, phi_iter_max);
 	
 	// Initialize a time vector of length iter_max+1.
