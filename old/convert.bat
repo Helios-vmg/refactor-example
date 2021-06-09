@@ -49,3 +49,9 @@ start cmd /c ..\test dphidyk00001.gkyl 2 ^> dphidyk00001.txt
 start cmd /c ..\test dphidyk00002.gkyl 2 ^> dphidyk00002.txt
 
 start cmd /c ..\test phik00000.gkyl 2 ^> phik00000.txt
+
+start cmd /c ..\test potSourcek00000.gkyl 2 ^> potSourcek00000.txt
+
+start cmd /c ..\test ksqu00000.gkyl 2 ^> ksqu00000.txt
+
+start cmd /c ..\test ninvksqu00000.gkyl 2 ^> ninvksqu00000.txt

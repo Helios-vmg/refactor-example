@@ -482,6 +482,16 @@ int main (void){
 		sprintf(temp, "potSourcek%05d.gkyl", 0);
 		print2DB(temp, potSourcek);
 	}
+	{
+		char temp[64];
+		sprintf(temp, "invnk%05d.gkyl", 0);
+		print2DB(temp, invnk);
+	}
+	{
+		char temp[64];
+		sprintf(temp, "ninvksqu%05d.gkyl", 0);
+		print2DB(temp, ninvksqu);
+	}
 	int phi_iter = potentialk(invnk, dndxk, dndyk, phik, potSourcek, kx, ky, ninvksqu, err_max, phi_iter_max);
 
 	// Initialize a time vector of length iter_max+1.
