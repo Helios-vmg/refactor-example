@@ -307,6 +307,8 @@ int main(){
 	print_matrix(Teinitial, Te);
 	print_matrix(Tiinitial, Ti);
 	print_matrix(phiinitial, phi);
+
+	print_binary_matrix(get_filename("dphidk", 0, 5), dphidk);
 	
 	auto vexbk = calcV_ExBk(dphidk);
 	auto vexb = from_fourier(vexbk);
@@ -331,6 +333,8 @@ int main(){
 		dphidk = derivk(phik, fourier_mesh.k);
 		dpedk = derivk(Pek, fourier_mesh.k);
 		dpidk = derivk(Pik, fourier_mesh.k);
+
+		print_binary_matrix(get_filename("dphidk", iter + 1, 5), dphidk);
 		
 		collision_frequencies = cfc.calculate_collision_frequencies(nek, Tik, Tek);
 		potSourcek = psc.calculate_potential_source(collision_frequencies, fourier_mesh.ksqu, Pik, Pek);
@@ -346,7 +350,6 @@ int main(){
 
 		// Calculate time step
 		double dt = tsc.calculate_time_step();
-		std::cout << dt << std::endl;
 		// Update time
 		time.push_back(time.back() + dt);
 

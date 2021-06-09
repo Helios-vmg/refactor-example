@@ -509,6 +509,16 @@ int main (void){
 
 	// Calculate all velocities
 	
+	{
+		char temp[64];
+		sprintf(temp, "dphidxk%05d.gkyl", 0);
+		print2DB(temp, dphidxk);
+	}
+	{
+		char temp[64];
+		sprintf(temp, "dphidyk%05d.gkyl", 0);
+		print2DB(temp, dphidyk);
+	}
 	calcV_ExBk(dphidxk, dphidyk, B, B2, vexbkx, vexbky);
 	c2rfft(vexbkx, vexbx);
 	c2rfft(vexbky, vexby);
@@ -550,7 +560,16 @@ int main (void){
 		// Calculate all  velocities
 		derivk(phik, kx, dphidxk);
 		derivk(phik, ky, dphidyk);
-		
+		{
+			char temp[64];
+			sprintf(temp, "dphidxk%05d.gkyl", iter + 1);
+			print2DB(temp, dphidxk);
+		}
+		{
+			char temp[64];
+			sprintf(temp, "dphidyk%05d.gkyl", iter + 1);
+			print2DB(temp, dphidyk);
+		}
 		calcV_ExBk(dphidxk, dphidyk, B, B2, vexbkx, vexbky);
 		c2rfft(vexbkx, vexbx);
 	
