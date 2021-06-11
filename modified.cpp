@@ -369,6 +369,12 @@ int main (void){
             }
                 
         }
+		
+	{
+		std::ofstream file("ne.bin", std::ios::binary);
+		file.write((const char *)ne, nx * ny * sizeof(double));
+	}
+	return 0;
 
  // convert to Fourier space
         r2cfft(ne, nek);

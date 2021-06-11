@@ -63,3 +63,6 @@ start cmd /c ..\test calculate_collision_frequencies_ne00000.gkyl ^> calculate_c
 start cmd /c ..\test calculate_collision_frequencies_invn00000.gkyl ^> calculate_collision_frequencies_invn00000.txt
 
 start cmd /c ..\test calculate_collision_frequencies_invnk00000.gkyl 2 ^> calculate_collision_frequencies_invnk00000.txt
+
+start cmd /c ..\test dndxk00000.gkyl 2 ^> dndxk00000.txt
+start cmd /c ..\test dndyk00000.gkyl 2 ^> dndyk00000.txt
