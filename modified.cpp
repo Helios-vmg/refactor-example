@@ -14,6 +14,7 @@
 #include <vector>
 # include <omp.h>
 #include <cstring>
+#include <fstream>
 
 
 static const int nx = 256;
