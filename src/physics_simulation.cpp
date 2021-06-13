@@ -251,20 +251,15 @@ int main(){
 		mesh2d.for_each([&ne, &Pi, &Pe](auto j, auto i, auto p){
 			auto &nep = ne.get(j, i);
 
-#if 1
 			auto t = tanh(b * (p.x + c));
 			auto part1 = p.x - xg;
 			auto part2 = p.x - Lx + xg;
 			auto bg1 = -bg * (part1 * part1);
-			auto bg2 = -bg * (part2 * part2);
+			auto bg2 = -bg * part2 * part2;
 			auto expsum = exp(bg1) + exp(bg2);
 			auto complicated_term = .02 * cos(2 * tau * p.y / Ly) * expsum;
 
 			nep = (a * t + d + a2 * t + d2 + complicated_term) * 1.E11;
-#else
-			nep = (a * tanh(b * (p.x + c)) + d + a2 * tanh(b * (p.x + c)) + d2 + .02 * cos(2 * tau * p.y / Ly) * (exp(-bg * ((p.x - xg) * (p.x - xg))) + exp(-bg * ((p.x - Lx + xg) * (p.x - Lx + xg))))) * 1.E11;
-#endif
-
 			Pe.get(j, i) = Pi.get(j, i) = nep * (1000 * 1.38E-23);
 		});
 		print_matrix(XXgrid, YYgrid, mesh2d);
